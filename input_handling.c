@@ -61,6 +61,29 @@ char** tokenizeInput(char* input)
 }
 
 
+void categorize_fg_bg_process(char* input){
+    int count_bg;
+    char** Commands = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
+    char** fg_command = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
+    char** bg_command = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
+
+    char* token = strtok(input, '&');
+    int command_count=0;
+
+    while (token!=NULL){
+        Commands[command_count++] = token;
+        token = strtok(NULL, sep);
+    }
+
+    for(int i=0; i<command_count-1; i++){
+        bg_command[i] = Commands[i];
+    }
+
+
+
+}
+
+
 /* Function to handle input i.e. identify the command and arguments */
 void processInput(char* input)
 {
