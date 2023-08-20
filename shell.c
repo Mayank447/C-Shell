@@ -10,7 +10,7 @@
 
 // Defining some macros(Maximum charater lengths)
 #define MAX_INPUT_LENGTH 1000
-
+#define MAX_PATH_LENGTH 1000
 
 // Global Variables - > System Info
 char* systemName;
@@ -21,6 +21,7 @@ struct utsname systemInfo;
 char* home_directory;
 char* current_directory;
 char* relative_dir;
+char* previous_directory;
 
 
 int get_username_syetemname_cwd(){
@@ -30,8 +31,13 @@ int get_username_syetemname_cwd(){
         return 1;
     }
     systemName = systemInfo.nodename;
-    home_directory = getcwd(home_directory, 1000);
-    current_directory = home_directory;
+    home_directory = getcwd(home_directory, MAX_PATH_LENGTH);
+    
+    current_directory = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
+    previous_directory = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
+
+    strcpy(current_directory, home_directory);
+    strcpy(previous_directory, home_directory);
     relative_dir = relativePath(home_directory, current_directory);
     return 0;
 }
@@ -65,8 +71,6 @@ int main(int argc, char* argv[]){
         getline(&input, &len,stdin);
         tokenizeInput(input);
         
-        // Checking if the user typed exit
-        if(!strcmp(input, "exit")) break;
     } while(1);
     exit(0);
 }

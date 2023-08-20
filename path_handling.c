@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include "shell.h"
 
+#define MAX_PATH_LENGTH 10000
+
+
+/* Function to get the relative path */
 char* relativePath(char* home_dir, char* cwd){
     
     int home_dir_length = strlen(home_dir);
@@ -27,4 +33,46 @@ char* relativePath(char* home_dir, char* cwd){
         relative_dir[i-home_dir_length + 1] = cwd[i];
     }
     return relative_dir;
+}
+
+
+/* Function to change the directory */
+void changeDirectory(char** command_string, int arguments){
+
+    for (int i=1; i<arguments; i++){
+        // Checking if the path is ~
+        if(strcmp(command_string[i],"~")==0){
+            if(chdir(home_directory)){
+                perror("ERROR: chdir() error");
+            }
+        }
+
+        // Checking if the path is relative to the home directory
+        else if(command_string[i][0] == 126){
+            char* temp = (char*)malloc(sizeof(char) * MAX_PATH_LENGTH);
+            strcpy(temp, home_directory);
+            strcat(temp, command_string[i]+1);
+            if(chdir(temp)!=0){
+                printf("ERROR: %s is not a valid directory\n", command_string[i]);
+                return;
+            }
+        }
+
+        // Checking if the path is -
+        else if(command_string[i][0] == 45 && strlen(command_string[i])==1){
+            if(chdir(previous_directory)){
+                perror("ERROR: chdir() error");
+            }
+        }
+
+        // Checking from relative and absolute paths
+        else if(chdir(command_string[i])!=0){
+            printf("ERROR: %s is not a valid directory\n", command_string[i]);
+            return;
+        }
+        strcpy(previous_directory, current_directory);
+        current_directory = getcwd(current_directory, MAX_PATH_LENGTH);
+        relative_dir = relativePath(home_directory, current_directory);
+    }
+    return;
 }
