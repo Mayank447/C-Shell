@@ -4,8 +4,6 @@
 #include <unistd.h>
 #include "shell.h"
 
-#define MAX_PATH_LENGTH 10000
-
 
 /* Function to get the relative path */
 char* relativePath(char* home_dir, char* cwd){

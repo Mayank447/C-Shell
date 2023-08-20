@@ -8,9 +8,9 @@
 #include "input_handling.h"
 
 
-// Defining some macros(Maximum charater lengths)
+// Defining some length variables(Maximum charater lengths)
 #define MAX_INPUT_LENGTH 1000
-#define MAX_PATH_LENGTH 1000
+int MAX_PATH_LENGTH = 1000;
 
 // Global Variables - > System Info
 char* systemName;

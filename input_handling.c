@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "path_handling.h"
+#include "ls_command.h"
 
 #define MAX_COMMANDS 100
 #define MAX_COMMAND_LENGTH 100
@@ -76,6 +78,10 @@ void processInput(char* input)
 
     else if(strcmp(command_string[0], "warp")==0){
         changeDirectory(command_string, i);
+    }
+
+    else if(strcmp(command_string[0], "peek")==0){
+        listFiles_Directory(command_string, i);
     }
 
     else{
