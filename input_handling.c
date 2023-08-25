@@ -4,15 +4,20 @@
 
 #include "path_handling.h"
 #include "ls_command.h"
+#include "history.h"
+#include "shell.h"
 
 #define MAX_COMMANDS 100
 #define MAX_COMMAND_LENGTH 100
 
-void processInput(char* input);
+
 const char sep[] = ";\n\r\v\f";
+void categorize_fg_bg_process(char* input);
+void processInput(char* input);
 
 
 /* Function to convert the input to lowercase */
+// TO DO: Lowercase only the first command
 char* lowercase(char* input){
     int i=0;
     while(input[i]!='\0'){
@@ -37,6 +42,7 @@ char* removeLeadingSpaces(char* input){
             while(input[i]==' ' || input[i]=='\t'){
                 i++;
             }
+            if(input[i]=='\0') break;
             input[j++] = ' ';
         }
     }
@@ -46,28 +52,32 @@ char* removeLeadingSpaces(char* input){
 
 
 /* Function to Tokenize the input */
-char** tokenizeInput(char* input)
+void tokenizeInput(char* input)
 {
+    char* input_copy = strdup(input);
     char** Commands = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
-    char* token = strtok(input, sep);
+    char* token = strtok(input_copy, sep);
     int i=0;
 
     while (token!=NULL){
         Commands[i] = removeLeadingSpaces(lowercase(token));
-        processInput(Commands[i++]);
+        categorize_fg_bg_process(Commands[i++]);
         token = strtok(NULL, sep);
     }
-    return Commands;
+    free(Commands);
 }
 
 
 void categorize_fg_bg_process(char* input){
-    int count_bg;
+
     char** Commands = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
-    char** fg_command = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
     char** bg_command = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
 
-    char* token = strtok(input, '&');
+    char* input_copy = (char*)malloc(sizeof(char)*(strlen(input)+1));
+    strcpy(input_copy, input);
+    free(input);
+
+    char* token = strtok(input_copy, "&");
     int command_count=0;
 
     while (token!=NULL){
@@ -79,23 +89,38 @@ void categorize_fg_bg_process(char* input){
         bg_command[i] = Commands[i];
     }
 
-
-
+    // If not a bg process
+    if(Commands[command_count-1][strlen(Commands[command_count-1]) - 1]!=38){
+        processInput(Commands[command_count-1]);
+    }
+    free(Commands);
+    free(bg_command);
 }
 
 
 /* Function to handle input i.e. identify the command and arguments */
 void processInput(char* input)
 {
-    char* command;
+    char* input_copy = strdup(input);
+    char* input_copy2 = strdup(input);
+    free(input);
+
     char** command_string = (char**)malloc(sizeof(char*)*MAX_COMMAND_LENGTH);
+    char* command;
 
     int i=0;
-    while  ((command = strsep(&input, " ")) != NULL){
+    while  ((command = strsep(&input_copy, " ")) != NULL){
         command_string[i++] = command;
+    }
+    
+    if(strcmp(command_string[0], "pastevents")!=0){
+        if(history_size==0 || strcmp(input_copy2, history_buffer[history_pointer])!=0)
+        AddCommandToHistory(input_copy2);
     }
 
     if(strcmp(command_string[0], "exit")==0){
+        WriteToHistory();
+        free(command_string);
         exit(0); // Closing the shell if the user typed exit
     }
 
@@ -107,7 +132,12 @@ void processInput(char* input)
         listFiles_Directory(command_string, i);
     }
 
+    else if(strcmp(command_string[0], "pastevents")==0){
+        processPasteventInput(command_string, i, input_copy2);
+    }
+
     else{
         printf("%s is an Invalid Command\n", command_string[0]);
     }
+    free(command_string);
 }

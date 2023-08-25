@@ -6,11 +6,13 @@
 
 #include "path_handling.h"
 #include "input_handling.h"
+#include "history.h"
 
 
 // Defining some length variables(Maximum charater lengths)
-#define MAX_INPUT_LENGTH 1000
+int MAX_INPUT_LENGTH = 1000;
 int MAX_PATH_LENGTH = 1000;
+int MAX_HISTORY_SIZE = 15;
 
 // Global Variables - > System Info
 char* systemName;
@@ -23,6 +25,10 @@ char* current_directory;
 char* relative_dir;
 char* previous_directory;
 
+// Global history
+char** history_buffer;
+int history_pointer;
+int history_size;
 
 int get_username_syetemname_cwd(){
     userName = getlogin();
@@ -57,6 +63,8 @@ int main(int argc, char* argv[]){
     //     }
     //     exit(0);
     // }
+
+    ReadHistoryFromFile();
 
     if(get_username_syetemname_cwd()) {
         printf("ERROR: Getting Username or SystemName\n");

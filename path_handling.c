@@ -20,9 +20,10 @@ char* relativePath(char* home_dir, char* cwd){
             return cwd;
     }
 
-    // If the next chracter is not / return cwd (since cwd another sibling directory with same initial name)
+    // If the next chracter is not '/' return cwd (since cwd is another sibling directory with same initials)
     if(home_dir_length!=cwd_length && cwd[home_dir_length]!='/') return cwd;
 
+    // Else take the remaining part of cwd and return it concatenated with '~'
     int relative_dir_length = cwd_length - home_dir_length + 1;
     char* relative_dir = (char*)malloc(sizeof(char)* relative_dir_length);
     relative_dir[0] = '~';
@@ -38,32 +39,35 @@ char* relativePath(char* home_dir, char* cwd){
 void changeDirectory(char** command_string, int arguments){
 
     for (int i=1; i<arguments; i++){
-        // Checking if the path is ~
-        if(strcmp(command_string[i],"~")==0){
-            if(chdir(home_directory)){
-                perror("ERROR: chdir() error");
-            }
-        }
-
+        
         // Checking if the path is relative to the home directory
-        else if(command_string[i][0] == 126){
+        if(command_string[i][0] == 126){
             char* temp = (char*)malloc(sizeof(char) * MAX_PATH_LENGTH);
             strcpy(temp, home_directory);
             strcat(temp, command_string[i]+1);
             if(chdir(temp)!=0){
+                free(temp);
                 printf("ERROR: %s is not a valid directory\n", command_string[i]);
                 return;
             }
+            free(temp);
         }
 
-        // Checking if the path is -
-        else if(command_string[i][0] == 45 && strlen(command_string[i])==1){
-            if(chdir(previous_directory)){
-                perror("ERROR: chdir() error");
+
+        // Checking if the path is relative to the previous directory
+        else if(command_string[i][0] == 45){
+            char* temp = (char*)malloc(sizeof(char) * MAX_PATH_LENGTH);
+            strcpy(temp, home_directory);
+            strcat(temp, command_string[i]+1);
+            if(chdir(temp)!=0){
+                free(temp);
+                printf("ERROR: %s is not a valid directory\n", command_string[i]);
+                return;
             }
+            free(temp);
         }
 
-        // Checking from relative and absolute paths
+        // Checking if not a path relative to home dir or previous dir
         else if(chdir(command_string[i])!=0){
             printf("ERROR: %s is not a valid directory\n", command_string[i]);
             return;

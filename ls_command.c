@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <errno.h>
+#include <inttypes.h>
 
 #include "shell.h"
 
@@ -40,11 +41,13 @@ void listFiles_Directory(char** input, int arguments)
     else path = input[arguments-1];
 
     // Checking for path relative to home directory
+    int free_temp = 0;
     if(path[0]==126){
         char* temp = (char*)malloc(sizeof(char) * MAX_PATH_LENGTH);
         strcpy(temp, home_directory);
         strcat(temp, path+1);
         path = temp;
+        free_temp = 1;
     }
 
     // Checking for path relative to previous directory
@@ -53,6 +56,7 @@ void listFiles_Directory(char** input, int arguments)
         strcpy(temp, previous_directory);
         strcat(temp, path+1);
         path = temp;
+        free_temp = 1;
     }
 
     struct dirent *d;
@@ -62,14 +66,22 @@ void listFiles_Directory(char** input, int arguments)
 	if (!dh){
 		if (errno == ENOENT) perror("Directory doesn't exist"); // directory not found
         else perror("Unable to read directory"); // directory is not readable
-		return;
+		if(free_temp) free(path);
+        free(dh);
+        return;
 	}
 
+    // Reading the directory and printing the files and directories
     while((d=readdir(dh))!=NULL){
         if (!op_a && d->d_name[0] == '.')
 			continue;
-		printf("%s  ", d->d_name);
+		printf("%llu  %s  %d  %d  %llu  %hhu", d->d_ino, d->d_name, d->d_namlen, d->d_reclen, d->d_seekoff, d->d_type);
 		if(op_l) printf("\n");
     }
     if(!op_l) printf("\n");
+
+    // Freeing the allocated memory
+    if(free_temp) free(path);
+    free(d);
+    free(dh);
 }
