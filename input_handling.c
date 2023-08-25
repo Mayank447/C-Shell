@@ -85,7 +85,10 @@ void categorize_fg_bg_process(char* input){
         token = strtok(NULL, sep);
     }
 
-    for(int i=0; i<command_count-1; i++){
+    for(int i=0; i<command_count; i++){
+        // if(Commands[i][strlen(Commands[i]) - 1]=='&'){
+        //     Commands[i][strlen(Commands[i]) - 1] = '\0';
+        // }
         bg_command[i] = Commands[i];
     }
 
