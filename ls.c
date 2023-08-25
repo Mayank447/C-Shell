@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include "shell.h"
+#include "color.h"
 
 /* Function to list all the files and directories in the given path*/
 void listFiles_Directory(char** input, int arguments)
@@ -75,10 +76,13 @@ void listFiles_Directory(char** input, int arguments)
     while((d=readdir(dh))!=NULL){
         if (!op_a && d->d_name[0] == '.')
 			continue;
-		printf("%llu  %s  %d  %d  %llu  %hhu", d->d_ino, d->d_name, d->d_namlen, d->d_reclen, d->d_seekoff, d->d_type);
-		if(op_l) printf("\n");
+		if(op_l){
+            printf("%llu  %s  %d  %d  %llu  %hhu\n", d->d_ino, d->d_name, d->d_namlen, d->d_reclen, d->d_seekoff, d->d_type);
+            continue;
+        }
+		print_white(d->d_name); //37 is for white
+        printf("\n");
     }
-    if(!op_l) printf("\n");
 
     // Freeing the allocated memory
     if(free_temp) free(path);

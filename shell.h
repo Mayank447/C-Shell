@@ -9,6 +9,7 @@ extern char* previous_directory;
 extern int MAX_INPUT_LENGTH;
 extern int MAX_PATH_LENGTH;
 extern int MAX_HISTORY_SIZE;
+extern int MAX_FILE_NAME_LENGTH;
 
 extern char** history_buffer;
 extern int history_pointer;

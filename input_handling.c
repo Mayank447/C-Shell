@@ -6,6 +6,7 @@
 #include "ls_command.h"
 #include "history.h"
 #include "shell.h"
+#include "find.h"
 
 #define MAX_COMMANDS 100
 #define MAX_COMMAND_LENGTH 100
@@ -133,6 +134,10 @@ void processInput(char* input)
 
     else if(strcmp(command_string[0], "peek")==0){
         listFiles_Directory(command_string, i);
+    }
+
+    else if(strcmp(command_string[0], "seek")==0){
+        find(command_string, i);
     }
 
     else if(strcmp(command_string[0], "pastevents")==0){

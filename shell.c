@@ -13,6 +13,7 @@
 int MAX_INPUT_LENGTH = 1000;
 int MAX_PATH_LENGTH = 1000;
 int MAX_HISTORY_SIZE = 15;
+int MAX_FILE_NAME_LENGTH = 256;
 
 // Global Variables - > System Info
 char* systemName;
@@ -74,7 +75,7 @@ int main(int argc, char* argv[]){
     size_t len;
 
     do{
-        printf("<%s@%s:%s> ",userName, systemName, relative_dir);
+        printf("\033[1;0m<%s@%s:%s> ",userName, systemName, relative_dir);
         fflush(stdout);
         getline(&input, &len,stdin);
         tokenizeInput(input);
