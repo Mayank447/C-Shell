@@ -12,7 +12,11 @@ void ReadHistoryFromFile()
     history_buffer = (char**)malloc(sizeof(char*)*MAX_HISTORY_SIZE);
 
     // Checking if the history file exists
-    if (access(".CShell_history", F_OK) != 0){
+    // char* path = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
+    // strcpy(path, home_directory);
+    // strcat(path, "/.CShell_history");
+
+    if (access("/.CShell_history", F_OK) != 0){
         FILE* fp = fopen(".CShell_history", "w");
         if(fp==NULL){
             perror("Error creating a history file");
@@ -64,8 +68,13 @@ void ReadHistoryFromFile()
 
 // Fn. to write history from history buffer to the file
 /* Need to append the commands and change the file pointer to the beginning */
-void WriteToHistory(){
-    FILE* fp = fopen(".CShell_history", "w");
+void WriteToHistory()
+{
+    char* path = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
+    strcpy(path, home_directory);
+    strcat(path, "/.CShell_history");
+
+    FILE* fp = fopen(path, "w");
     if(fp==NULL){
         perror("Error opening history file");
         return;
@@ -78,12 +87,6 @@ void WriteToHistory(){
     }
     if(history_size!=0) fprintf(fp, "%s", history_buffer[i]);
     fclose(fp);
-
-    for (int i=0; i<history_size; i++){
-        if(history_buffer[i]!=NULL)
-            free(history_buffer[i]);
-    }
-    if(history_buffer!=NULL) free(history_buffer);
 }
 
 
@@ -100,7 +103,6 @@ void AddCommandToHistory(char* input){
     else if(history_size == 0){
         history_buffer[history_pointer] = (char*)malloc(sizeof(char)*MAX_INPUT_LENGTH);
         strcpy(history_buffer[history_pointer], input);
-        printf("%s", history_buffer[history_pointer]);
         history_size=1;
     }
 
@@ -109,6 +111,14 @@ void AddCommandToHistory(char* input){
         strcpy(history_buffer[history_pointer], input);
         history_size++;
     }
+}
+
+void deleteHistory(){
+    for (int i=0; i<history_size; i++){
+        if(history_buffer[i]!=NULL)
+            free(history_buffer[i]);
+    }
+    if(history_buffer!=NULL) free(history_buffer);
 }
 
 

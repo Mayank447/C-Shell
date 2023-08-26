@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "path_handling.h"
-#include "ls_command.h"
+#include "ls.h"
 #include "history.h"
 #include "shell.h"
 #include "find.h"

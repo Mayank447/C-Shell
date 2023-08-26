@@ -4,7 +4,8 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <errno.h>
-#include <inttypes.h>
+#include <sys/types.h>
+#include <time.h>
 
 #include "shell.h"
 #include "color.h"

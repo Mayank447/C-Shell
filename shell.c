@@ -45,7 +45,7 @@ int get_username_syetemname_cwd(){
 
     strcpy(current_directory, home_directory);
     strcpy(previous_directory, home_directory);
-    relative_dir = relativePath(home_directory, current_directory);
+    relative_dir = relativePath(current_directory);
     return 0;
 }
 
@@ -79,7 +79,9 @@ int main(int argc, char* argv[]){
         fflush(stdout);
         getline(&input, &len,stdin);
         tokenizeInput(input);
+        WriteToHistory();
         
     } while(1);
+    deleteHistory();
     exit(0);
 }

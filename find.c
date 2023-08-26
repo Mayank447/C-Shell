@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <unistd.h>
 
-// TODO: Relative path showing wrt ~ 
-
+#include "errno.h"
 #include "shell.h"
 #include "path_handling.h"
 #include "color.h"
+#include "path_handling.h"
 
-int FOUND;
-
+int COUNT;
+char* PREVIOUS_FOUND;
+int PREVIOUS_TYPE;
 
 char* extractFileName(char* input){
     char* temp = (char*)malloc(sizeof(char) * MAX_FILE_NAME_LENGTH);
@@ -25,6 +25,15 @@ char* extractFileName(char* input){
     return temp;
 }
 
+void PrintDirectory(char* path){
+    print_blue(path);
+    printf("\n");
+}
+
+void PrintFiles(char* path){
+    print_green(path);
+    printf("\n");
+}
 
 void findFiles_DirectoryRecursively(char* file, char* basePath, int d_flag, int f_flag, int e_flag){
 
@@ -46,51 +55,54 @@ void findFiles_DirectoryRecursively(char* file, char* basePath, int d_flag, int 
             
             // If filename doesn't match don't print
             if(strcmp(name, file)!=0) search=0;
-            else FOUND = 1;
+            else if (e_flag) {
+                if(d_flag && dp->d_type!=DT_DIR) search = 0;
+                else if(f_flag && dp->d_type!=DT_REG) search=0;
+            }
+            else COUNT++;
+            free(name);
 
-            struct stat sb;
             strcpy(path, basePath);
             strcat(path, "/");
             strcat(path, dp->d_name);
 
-            //If a flag was set
-            if(search && (d_flag || f_flag || e_flag))
-            { 
-                //Directory
-                if(d_flag==1 && dp->d_type==DT_DIR) {
-                    print_blue(path);
-                    printf("\n");
+            //If e flag was set
+            if(search && e_flag)
+            {   
+                // First time encountering a file
+                if(!PREVIOUS_FOUND && COUNT==0){
+                    PREVIOUS_FOUND = (char*)malloc(sizeof(char) * MAX_PATH_LENGTH);
+                    strcpy(PREVIOUS_FOUND, path);
+                    PREVIOUS_TYPE = dp->d_type;
+                    COUNT++;
                 }
 
-                //File
-                if(f_flag==1 && dp->d_type==DT_REG) {
-                    print_green(path);
-                    printf("\n");
+                // More than once occurence
+                else if(COUNT>0){
+                    if(dp->d_type==DT_DIR && !f_flag) {
+                        PrintDirectory(path);
+                        COUNT++;
+                    }
+                    else if(dp->d_type==DT_REG && !d_flag) {
+                        PrintFiles(path);
+                        COUNT++;
+                    }
                 }
-                
-                //Executable
-                if(e_flag==1 && stat(dp->d_name, &sb) == 0 && sb.st_mode & S_IXUSR){
-                    printf("%s/%s %d\n", basePath, dp->d_name, dp->d_type);
-                }
+            }
+
+            // Only d or f flag set
+            else if(search && (d_flag || f_flag)){
+
+                if(d_flag==1 && dp->d_type==DT_DIR) PrintDirectory(path); //Directory
+                else if(f_flag==1 && dp->d_type==DT_REG) PrintFiles(path); //File
             }
 
             // If no flag was set
             else if (search) {
-                if(dp->d_type==DT_DIR) {
-                    print_blue(path);
-                    printf("\n");
-                }
-                else if(dp->d_type==DT_REG) {
-                    print_green(path);
-                    printf("\n");
-                }
-                else {
-                    print_red(path);
-                    printf("\n");
-                }
+                if(dp->d_type==DT_DIR) PrintDirectory(path);
+                else if(dp->d_type==DT_REG) PrintFiles(path);
             }
 
-            free(name);
             findFiles_DirectoryRecursively(file, path, d_flag, f_flag, e_flag);
         }
     }
@@ -117,15 +129,9 @@ void find(char** command_string, int arguments){
         if(command_string[i][0]=='-' && strlen(command_string[i])!=1){
 
             for(int f=1; f<strlen(command_string[i]); f++){
-                if(command_string[i][f]=='d'){
-                    d_flag = 1;
-                }
-                else if(command_string[i][f]=='f'){
-                    f_flag = 1;
-                }
-                else if(command_string[i][f]=='e'){
-                    e_flag = 1;
-                }
+                if(command_string[i][f]=='d') d_flag = 1;
+                else if(command_string[i][f]=='f') f_flag = 1;
+                else if(command_string[i][f]=='e') e_flag = 1;
                 else{
                     printf("Invalid flag\n");
                     return;
@@ -152,7 +158,7 @@ void find(char** command_string, int arguments){
         return;
     }
 
-    char* dir =  ".";
+    char* dir =  "."; char* temp=NULL;
     char* file = command_string[flag_end+1];
     if(flag_end + 2 != arguments)
          dir = command_string[flag_end+2];
@@ -172,7 +178,48 @@ void find(char** command_string, int arguments){
         dir = temp;
     }
 
-    FOUND = 0;
+    COUNT = 0;
+    PREVIOUS_FOUND = NULL;
     findFiles_DirectoryRecursively(file, dir, d_flag, f_flag, e_flag);
-    if(!FOUND) printf("No match found!\n");
+    
+    if(COUNT==0) printf("No match found!\n");
+
+    else if(e_flag && PREVIOUS_FOUND!=NULL) 
+    {
+        if(COUNT==1 && PREVIOUS_TYPE==DT_DIR) {
+            int err = chdir(PREVIOUS_FOUND);
+            if (err == -1) fprintf(stderr, "seek : -e : %s\n", strerror(errno));
+
+            current_directory = getcwd(current_directory, MAX_PATH_LENGTH);
+            relative_dir = relativePath(current_directory);
+        }
+        
+        else if(COUNT>1 && PREVIOUS_TYPE==DT_DIR) PrintDirectory(PREVIOUS_FOUND);
+
+        else if(PREVIOUS_TYPE==DT_REG){
+            PrintFiles(PREVIOUS_FOUND);
+
+            if(COUNT==1) {
+                FILE* f = fopen(PREVIOUS_FOUND, "r");
+                char * line = NULL;
+                size_t len = 0;
+                ssize_t read;
+                while (f!=NULL && (read = getline(&line, &len, f)) != -1) {
+                    printf("%s", line);
+                }
+                printf("\n");
+                fclose(f);
+            }
+        }
+    }
+
+    COUNT = 0;
+    if(PREVIOUS_FOUND) {
+        free(PREVIOUS_FOUND);
+        PREVIOUS_FOUND = NULL;
+    }
+    if(temp){
+        free(temp);
+        temp = NULL;
+    }
 }

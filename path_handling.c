@@ -6,9 +6,9 @@
 
 
 /* Function to get the relative path */
-char* relativePath(char* home_dir, char* cwd){
+char* relativePath(char* cwd){
     
-    int home_dir_length = strlen(home_dir);
+    int home_dir_length = strlen(home_directory);
     int cwd_length = strlen(cwd);
 
     // If the length of home_directory is longer than cwd, return cwd
@@ -16,7 +16,7 @@ char* relativePath(char* home_dir, char* cwd){
 
     // If any character mismatch from index 0, return cwd 
     for (int i=0; i<home_dir_length; i++){
-        if(home_dir[i]!=cwd[i])
+        if(home_directory[i]!=cwd[i])
             return cwd;
     }
 
@@ -74,7 +74,7 @@ void changeDirectory(char** command_string, int arguments){
         }
         strcpy(previous_directory, current_directory);
         current_directory = getcwd(current_directory, MAX_PATH_LENGTH);
-        relative_dir = relativePath(home_directory, current_directory);
+        relative_dir = relativePath(current_directory);
     }
     return;
 }
