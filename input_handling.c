@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "shell.h"
+#include "history.h"
+#include "bg_process.h"
 #include "path_handling.h"
 #include "ls.h"
-#include "history.h"
-#include "shell.h"
 #include "find.h"
 
 #define MAX_COMMANDS 100
@@ -69,13 +70,23 @@ void tokenizeInput(char* input)
 }
 
 
-void categorize_fg_bg_process(char* input){
+char** getCommandWithArguments(char* input_copy, int* argument){
+    char** command_string = (char**)malloc(sizeof(char*)*MAX_COMMAND_LENGTH);
+    char* command;
 
+    int i=0;
+    while  ((command = strsep(&input_copy, " ")) != NULL){
+        command_string[i++] = command;
+    }
+    *argument = i;
+    return command_string;
+}
+
+
+void categorize_fg_bg_process(char* input)
+{
     char** Commands = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
-    char** bg_command = (char**)malloc(sizeof(char*)*MAX_COMMANDS);
-
-    char* input_copy = (char*)malloc(sizeof(char)*(strlen(input)+1));
-    strcpy(input_copy, input);
+    char* input_copy = strdup(input);
     free(input);
 
     char* token = strtok(input_copy, "&");
@@ -87,19 +98,24 @@ void categorize_fg_bg_process(char* input){
     }
 
     for(int i=0; i<command_count; i++){
-        // if(Commands[i][strlen(Commands[i]) - 1]=='&'){
-        //     Commands[i][strlen(Commands[i]) - 1] = '\0';
-        // }
-        bg_command[i] = Commands[i];
+        if(Commands[i][strlen(Commands[i]) - 1]=='&'){
+            Commands[i][strlen(Commands[i]) - 1] = '\0';
+        }
+        int argument;
+        char** command_string = getCommandWithArguments(Commands[i], &argument);
+        execute_command(command_string, argument, 1);
+        free(command_string);
     }
 
-    // If not a bg process
-    if(Commands[command_count-1][strlen(Commands[command_count-1]) - 1]!=38){
+    //If not a bg process
+    if(Commands[command_count-1][strlen(Commands[command_count-1]) - 1]!='&'){
         processInput(Commands[command_count-1]);
     }
     free(Commands);
-    free(bg_command);
 }
+
+
+
 
 
 /* Function to handle input i.e. identify the command and arguments */
@@ -146,7 +162,8 @@ void processInput(char* input)
     }
 
     else{
-        printf("%s is an Invalid Command\n", command_string[0]);
+        execute_command(command_string, i, 0);
     }
+    free(input_copy2);
     free(command_string);
 }
