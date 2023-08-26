@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "shell.h"
 
+//TO DO: Put relative path in the while loop
 
 /* Function to get the relative path */
 char* relativePath(char* cwd){

@@ -82,6 +82,7 @@ int main(int argc, char* argv[]){
         WriteToHistory();
         
     } while(1);
+    free(input);
     deleteHistory();
     exit(0);
 }

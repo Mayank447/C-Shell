@@ -54,7 +54,6 @@ void execute_command(char** command_string, int argument, int is_background){
     }
 
     else{
-        printf("Inside\n");
         if(is_background) printf("%d\n", pid);
         else{
             waitpid(pid, &status, 0);
