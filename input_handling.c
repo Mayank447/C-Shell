@@ -125,6 +125,7 @@ void processInput(char* input)
     if(strcmp(command_string[0], "exit")==0){
         WriteToHistory();
         free(command_string);
+        deleteHistory();
         exit(0); // Closing the shell if the user typed exit
     }
 
