@@ -51,6 +51,32 @@ char* removeLeadingSpaces(char* input){
     return input;
 }
 
+void ampercentParser(char commands[][MAX_COMMAND_LENGTH], char input[], int* ampercent){
+    int l = strlen(input), j=0;
+    int command_count=0;
+    
+    int single_quotes = 0;
+    int double_quotes = 0;
+
+    for(int i=0; i<l; i++){
+        if(input[i]=='\''){
+            single_quotes = (single_quotes+1)%2;
+        }
+
+        else if(input[i]=='\"'){
+            double_quotes = (double_quotes+1)%2;
+        }
+
+        else if(input[i]=='&' && !single_quotes && !double_quotes) {
+            input[i]='\0';
+            strcpy(commands[command_count++], input + j);
+            j=i+1;
+            *ampercent += 1;
+        }
+    }
+    strcpy(commands[command_count], input + j);
+}
+
 /* Function to count occurences of a character in a string*/
 int count_occurences(char* s, char c){
     int res = 0;
@@ -64,16 +90,15 @@ int count_occurences(char* s, char c){
 /* Function to Tokenize the input */
 void tokenizeInput(char* input){
     char* input_copy = strdup(input);
-    char* Commands[MAX_COMMANDS];
+    char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
 
     char* token = strtok(input_copy, sep);
     int i=0;
 
     while (token!=NULL){
-        Commands[i] = (char*)malloc(sizeof(char) * MAX_COMMAND_LENGTH);
-        strcpy(Commands[i++], lowercase(removeLeadingSpaces(token)));
-        printf("Token: %s\n", Commands[i-1]);
-        //categorize_fg_bg_process(Commands[i++]);
+        strcpy(Commands[i], lowercase(removeLeadingSpaces(token)));
+        //printf("Token: %s\n", Commands[i]);
+        categorize_fg_bg_process(Commands[i++]);
         token = strtok(NULL, sep);
     }
 }
@@ -90,48 +115,33 @@ char** getCommandWithArguments(char* input_copy, int* argument){
     return command_string;
 }
 
-void categorize_fg_bg_process(char* input)
+void categorize_fg_bg_process(char input[])
 {
-    printf("%s\n", input);
-    char* Commands[MAX_COMMANDS];
-    char* input_copy = strdup(input);
-    free(input);
+    char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
+    int ampercent_count=0, arguments;
+    
+    int condition = (input[strlen(input)-1]=='&') ? 0:1;
+    ampercentParser(Commands, input, &ampercent_count);
 
-    int count_amphercent = count_occurences(input_copy, '&');
-    char* token = strtok(input_copy, "&");
-    int command_count=0, argument;
-
-    while (token!=NULL){
-        Commands[command_count] = (char*)malloc(sizeof(char) * MAX_COMMAND_LENGTH);
-        strcpy(Commands[command_count++], removeLeadingSpaces(token));
-        token = strtok(NULL, "&");
+    int i=0;
+    for(; i < ampercent_count; i++){
+        char** command_string = getCommandWithArguments(removeLeadingSpaces(Commands[i]), &arguments);
+        //printf("%s\n", removeLeadingSpaces(Commands[i]));
+        execute_command(command_string, arguments, 1);
     }
 
-    // Checking if the last command is fg or bg
-    int condition = command_count - 1;
-    if(command_count == count_amphercent) condition=command_count;
-
-
-    for(int i=0; i<condition; i++){
-        char** command_string = getCommandWithArguments(Commands[i], &argument);
-        execute_command(command_string, argument, 1);
-        free(command_string);
-    }
-
-    //If not a bg process
-    if(command_count != count_amphercent){
-        printf("%s\n", Commands[command_count-1]);
-        processInput(Commands[command_count-1]);
+    // If not a bg process
+    if(condition){
+        processInput(removeLeadingSpaces(Commands[i]));
     }
 }
 
 
 /* Function to process input string i.e. identify the command*/
-void processInput(char* input)
+void processInput(char input[])
 {
     char* input_copy = strdup(input);
     char* input_copy2 = strdup(input);
-    free(input);
 
     char** command_string = (char**)malloc(sizeof(char*)*MAX_COMMAND_LENGTH);
     char* command;
