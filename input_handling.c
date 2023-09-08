@@ -8,9 +8,7 @@
 #include "path_handling.h"
 #include "ls.h"
 #include "find.h"
-
-#define MAX_COMMANDS 100
-#define MAX_COMMAND_LENGTH 100
+#include "proclore.h"
 
 const char sep[] = ";\n\r\v\f";
 
@@ -97,22 +95,20 @@ void tokenizeInput(char* input){
 
     while (token!=NULL){
         strcpy(Commands[i], lowercase(removeLeadingSpaces(token)));
-        //printf("Token: %s\n", Commands[i]);
+        // printf("Token: %s\n", Commands[i]);
         categorize_fg_bg_process(Commands[i++]);
         token = strtok(NULL, sep);
     }
 }
 
-char** getCommandWithArguments(char* input_copy, int* argument){
-    char** command_string = (char**)malloc(sizeof(char*)*MAX_COMMAND_LENGTH);
+void getCommandWithArguments(char command_string[][MAX_COMMAND_LENGTH], char* input_copy, int* argument){
     char* command;
 
     int i=0;
     while  ((command = strsep(&input_copy, " ")) != NULL){
-        command_string[i++] = command;
+        strcpy(command_string[i++], command);
     }
     *argument = i;
-    return command_string;
 }
 
 void categorize_fg_bg_process(char input[])
@@ -123,9 +119,10 @@ void categorize_fg_bg_process(char input[])
     int condition = (input[strlen(input)-1]=='&') ? 0:1;
     ampercentParser(Commands, input, &ampercent_count);
 
+    char command_string[MAX_ARGUMENTS][MAX_COMMAND_LENGTH];
     int i=0;
     for(; i < ampercent_count; i++){
-        char** command_string = getCommandWithArguments(removeLeadingSpaces(Commands[i]), &arguments);
+         getCommandWithArguments(command_string, removeLeadingSpaces(Commands[i]), &arguments);
         //printf("%s\n", removeLeadingSpaces(Commands[i]));
         execute_command(command_string, arguments, 1);
     }
@@ -169,6 +166,10 @@ void processInput(char input[])
 
     else if(strcmp(command_string[0], "peek")==0){
         listFiles_Directory(command_string, i);
+    }
+
+    else if(strcmp(command_string[0], "proclore")==0){
+        proclore(command_string, i);
     }
 
     else if(strcmp(command_string[0], "seek")==0){

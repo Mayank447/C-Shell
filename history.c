@@ -11,12 +11,7 @@ void ReadHistoryFromFile()
 {
     history_buffer = (char**)malloc(sizeof(char*)*MAX_HISTORY_SIZE);
 
-    // Checking if the history file exists
-    // char* path = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
-    // strcpy(path, home_directory);
-    // strcat(path, "/.CShell_history");
-
-    if (access("/.CShell_history", F_OK) != 0){
+    if (access(".CShell_history", F_OK) != 0){
         FILE* fp = fopen(".CShell_history", "w");
         if(fp==NULL){
             perror("Error creating a history file");

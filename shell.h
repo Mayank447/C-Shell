@@ -15,4 +15,10 @@ extern char** history_buffer;
 extern int history_pointer;
 extern int history_size;
 
+extern int MAX_COMMANDS;
+extern int MAX_COMMAND_LENGTH;
+extern int MAX_ARGUMENTS;
+
+void custom_error(const char* error);
+
 #endif

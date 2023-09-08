@@ -15,10 +15,15 @@ int MAX_PATH_LENGTH = 1000;
 int MAX_HISTORY_SIZE = 15;
 int MAX_FILE_NAME_LENGTH = 256;
 
+int MAX_COMMANDS = 100;
+int MAX_COMMAND_LENGTH = 1000;
+int MAX_ARGUMENTS = 100;
+
 // Global Variables - > System Info
 char* systemName;
 char* userName;
 struct utsname systemInfo;
+int SHELL_PID;
 
 // Global Variables - > Directory handling
 char* home_directory;
@@ -54,6 +59,12 @@ int get_username_syetemname_cwd(){
 void die(const char *s){
     perror(s);
     exit(1);
+}
+
+// Function to print custom error
+void custom_error(const char *s){
+    fprintf(stderr, s);
+    fprintf(stderr, "\n");
 }
 
 int main(int argc, char* argv[]){
