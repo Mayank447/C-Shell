@@ -28,7 +28,6 @@ char* lowercase(char* input){
     return input;
 }
 
-
 /* Function to remove leading spcae and replace multiple or tab spaces with a single space */
 char* removeLeadingSpaces(char* input){
     int i=0, j=0;
@@ -49,8 +48,10 @@ char* removeLeadingSpaces(char* input){
     return input;
 }
 
-void ampercentParser(char commands[][MAX_COMMAND_LENGTH], char input[], int* ampercent){
+/* Function to parse input string and tokenize it based on chracter provided*/
+void characterParser(char commands[][MAX_COMMAND_LENGTH], char input[], int* ampercent, char c){
     int l = strlen(input), j=0;
+    if(input[l-1]=='\n') input[l-1]='\0'; // Removing the '\n' character from the end of the input string
     int command_count=0;
     
     int single_quotes = 0;
@@ -65,7 +66,7 @@ void ampercentParser(char commands[][MAX_COMMAND_LENGTH], char input[], int* amp
             double_quotes = (double_quotes+1)%2;
         }
 
-        else if(input[i]=='&' && !single_quotes && !double_quotes) {
+        else if(input[i]==c && !single_quotes && !double_quotes) {
             input[i]='\0';
             strcpy(commands[command_count++], input + j);
             j=i+1;
@@ -87,17 +88,13 @@ int count_occurences(char* s, char c){
 
 /* Function to Tokenize the input */
 void tokenizeInput(char* input){
-    char* input_copy = strdup(input);
     char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
 
-    char* token = strtok(input_copy, sep);
-    int i=0;
-
-    while (token!=NULL){
-        strcpy(Commands[i], lowercase(removeLeadingSpaces(token)));
-        // printf("Token: %s\n", Commands[i]);
-        categorize_fg_bg_process(Commands[i++]);
-        token = strtok(NULL, sep);
+    int semicolon_count=0;
+    characterParser(Commands, input, &semicolon_count, ';');
+    
+    for (int i=0; i<semicolon_count+1; i++){
+        categorize_fg_bg_process(lowercase(removeLeadingSpaces(Commands[i++])));
     }
 }
 
@@ -117,13 +114,13 @@ void categorize_fg_bg_process(char input[])
     int ampercent_count=0, arguments;
     
     int condition = (input[strlen(input)-1]=='&') ? 0:1;
-    ampercentParser(Commands, input, &ampercent_count);
+    characterParser(Commands, input, &ampercent_count, '&');
 
     char command_string[MAX_ARGUMENTS][MAX_COMMAND_LENGTH];
     int i=0;
+    
     for(; i < ampercent_count; i++){
-         getCommandWithArguments(command_string, removeLeadingSpaces(Commands[i]), &arguments);
-        //printf("%s\n", removeLeadingSpaces(Commands[i]));
+        getCommandWithArguments(command_string, removeLeadingSpaces(Commands[i]), &arguments);
         execute_command(command_string, arguments, 1);
     }
 
@@ -137,6 +134,7 @@ void categorize_fg_bg_process(char input[])
 /* Function to process input string i.e. identify the command*/
 void processInput(char input[])
 {
+    printf("%s\n", input);
     char* input_copy = strdup(input);
     char* input_copy2 = strdup(input);
 
