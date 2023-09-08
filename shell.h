@@ -19,6 +19,10 @@ extern int MAX_COMMANDS;
 extern int MAX_COMMAND_LENGTH;
 extern int MAX_ARGUMENTS;
 
+// extern int STDIN;
+// extern int STDOUT;
+// extern int STDERR;
+
 void custom_error(const char* error);
 
 #endif

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "shell.h"
 #include "history.h"
@@ -76,15 +78,59 @@ void characterParser(char commands[][MAX_COMMAND_LENGTH], char input[], int* amp
     strcpy(commands[command_count], input + j);
 }
 
-/* Function to count occurences of a character in a string*/
-int count_occurences(char* s, char c){
-    int res = 0;
-    for (int i=0; i < strlen(s); i++){
-        if (s[i] == c)
-            res++;
+
+void input_redirection(char* input){
+    // Split the input string into two parts based on > >> < 
+    int single_quotes = 0;
+    int double_quotes = 0;
+    
+    for(int i=0; i<strlen(input); i++){
+        if(input[i]=='\'')  single_quotes = (single_quotes+1)%2;
+
+        else if(input[i]=='\"') double_quotes = (double_quotes+1)%2;
+
+        else if(input[i]=='>' && input[i+1]=='>' && !single_quotes && !double_quotes){ //>> append
+            input[i] = '\0';
+            input[i+1] = '\0';
+            int j=2;
+            while(input[i+j]==' ' || input[i+j]=='\t') {
+                j++;
+                if(input[i+j]=='\0') return;
+            }
+            char* file_name = input + i + j;
+            int fd = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
+            dup2(fd, STDOUT_FILENO);
+            close(fd);
+            printf("exit2\n");
+            break;
+        }
+
+        else if(input[i]=='>' && !single_quotes && !double_quotes){
+            input[i] = '\0';
+            int j=1;
+            while(input[i+j]==' ' || input[i+j]=='\t') j++;
+            char* file_name = input + i + j;
+            int fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+            printf("Inside\n");
+            if(dup2(fd, STDOUT_FILENO) < 0) {
+                printf("Unable to duplicate file descriptor.");
+                return;
+            }
+            printf("STDOUT_FILENO: %d\n", STDOUT_FILENO);
+            break;
+        }
+
+        else if(input[i]=='<' && !single_quotes && !double_quotes){
+            input[i] = '\0';
+            char* file_name = input + i + 1;
+            int fd = open(file_name, O_RDONLY, 0644);
+            dup2(fd, STDIN_FILENO);
+            close(fd);
+            break;
+        }
     }
-    return res;
 }
+
 
 /* Function to Tokenize the input */
 void tokenizeInput(char* input){
@@ -118,14 +164,16 @@ void categorize_fg_bg_process(char input[])
 
     char command_string[MAX_ARGUMENTS][MAX_COMMAND_LENGTH];
     int i=0;
-    
+
     for(; i < ampercent_count; i++){
+        input_redirection(Commands[i]);
         getCommandWithArguments(command_string, removeLeadingSpaces(Commands[i]), &arguments);
         execute_command(command_string, arguments, 1);
     }
 
     // If not a bg process
     if(condition){
+        input_redirection(Commands[i]);
         processInput(removeLeadingSpaces(Commands[i]));
     }
 }
@@ -134,7 +182,6 @@ void categorize_fg_bg_process(char input[])
 /* Function to process input string i.e. identify the command*/
 void processInput(char input[])
 {
-    printf("%s\n", input);
     char* input_copy = strdup(input);
     char* input_copy2 = strdup(input);
 
