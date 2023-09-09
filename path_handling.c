@@ -37,7 +37,7 @@ char* relativePath(char* cwd){
 
 
 /* Function to change the directory */
-void changeDirectory(char** command_string, int arguments){
+void changeDirectory(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
 
     for (int i=1; i<arguments; i++){
         

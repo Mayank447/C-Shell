@@ -19,6 +19,7 @@ int MAX_FILE_NAME_LENGTH = 256;
 int MAX_COMMANDS = 100;
 int MAX_COMMAND_LENGTH = 1000;
 int MAX_ARGUMENTS = 100;
+int MAX_ARGUMENT_LENGTH = 1000;
 
 // Global Variables - > System Info
 char* systemName;

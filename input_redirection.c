@@ -13,7 +13,20 @@ void extractFilename(char* input, char file_name[], int i){
 
     while(input[i+k]!='\0' && (input[i+k]!=' ' && input[i+k]!='\t')) k++;
     input[i+k] = '\0';
-    strcpy(file_name,input + i + j);
+    
+    if(input[i+j]=='~'){
+        strcpy(file_name, home_directory);
+        strcat(file_name,input + i + j + 1);
+    }
+
+    else if(input[i+j]=='-'){
+        strcpy(file_name, previous_directory);
+        strcat(file_name,input + i + j + 1);
+    }
+    
+    else {
+        strcpy(file_name,input + i + j);
+    }
 }
 
 void input_redirection(char* input){
@@ -35,14 +48,14 @@ void input_redirection(char* input){
         else if(input[i]=='>' && input[i+1]=='>' && !single_quotes && !double_quotes){ //>> append
             input[i] = '\0';
             input[i+1] = '\0';
-            int j=2;
-            while(input[i+j]==' ' || input[i+j]=='\t') {
-                j++;
-                if(input[i+j]=='\0') return;
-            }
-            char* file_name = input + i + j;
+            char file_name[MAX_FILE_NAME_LENGTH];
+            extractFilename(input, file_name, i+1);
+
             int fd = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
-            dup2(fd, STDOUT_FILENO);
+            if(dup2(fd, STDOUT_FILENO) < 0) {
+                fprintf(stderr, "Invalid filename: %s", file_name);
+                exit(1);
+            }
             close(fd);
         }
 
@@ -53,7 +66,7 @@ void input_redirection(char* input){
             int fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 
             if(dup2(fd, STDOUT_FILENO) < 0) {
-                fprintf(stderr, "Unable to duplicate file descriptor.");
+                fprintf(stderr, "Invalid filename: %s", file_name);
                 exit(1);
             }
             close(fd);

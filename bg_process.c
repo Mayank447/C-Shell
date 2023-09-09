@@ -8,7 +8,7 @@
 
 #include "shell.h"
 
-void execute_command(char** command_string, int argument, int is_background){
+void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, int is_background){
 
     // Get all the arguments for the command
     char* arguments[MAX_ARGUMENTS];
@@ -23,7 +23,7 @@ void execute_command(char** command_string, int argument, int is_background){
     // Child process
     if(pid==0){
         execvp(command_string[0], arguments);
-        perror("Invalid command\n");
+        perror("Invalid command:");
     }
 
     else{

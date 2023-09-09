@@ -112,7 +112,7 @@ void findFiles_DirectoryRecursively(char* file, char* basePath, int d_flag, int 
 
 
 // Main find function
-void find(char** command_string, int arguments){
+void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
     
     // Determining the flags used
     int d_flag = 0;

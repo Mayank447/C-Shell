@@ -64,7 +64,7 @@ void l_flag_print(struct stat file_stat)
 
 
 // Function to list all the files and directories in the given path
-void listFiles_Directory(char** input, int arguments)
+void listFiles_Directory(char input[][MAX_ARGUMENT_LENGTH], int arguments)
 {
     // Checking is the last argument is a flag
     int condition = (input[arguments-1][0]==45 && strlen(input[arguments-1])!=1);

@@ -144,7 +144,7 @@ void PrintHistory(){
 }
 
 
-void processPasteventInput(char** command_string, int arguments, char* input){
+void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int arguments, char* input){
     
     if(arguments == 1){ // Print the history
         PrintHistory();

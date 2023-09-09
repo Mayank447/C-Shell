@@ -18,6 +18,7 @@ extern int history_size;
 extern int MAX_COMMANDS;
 extern int MAX_COMMAND_LENGTH;
 extern int MAX_ARGUMENTS;
+extern int MAX_ARGUMENT_LENGTH;
 
 // extern int STDIN;
 // extern int STDOUT;

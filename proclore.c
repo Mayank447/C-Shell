@@ -86,7 +86,7 @@ void getProcessFiles(int pid){
     print_proclore(pid, process_state, pgrp, virtual_memory_size, relative_process_exec_path);
 }
 
-void proclore(char** input, int arguments)
+void proclore(char input[][MAX_ARGUMENT_LENGTH], int arguments)
 {
     pid_t pid;
 
