@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>
+#include <fcntl.h>
 
 #include "path_handling.h"
 #include "input_handling.h"
@@ -36,11 +37,6 @@ char** history_buffer;
 int history_pointer;
 int history_size;
 
-// Standard Input/Output/Error
-// int NEW_IN = 0;
-// int NEW_OUT = 1;
-// int NEW_ERR = 2;
-
 int get_username_syetemname_cwd(){
     userName = getlogin();
     if(uname(&systemInfo)>0){
@@ -59,9 +55,10 @@ int get_username_syetemname_cwd(){
     return 0;
 }
 
-void restore_std(){
-    dup2(1, STDOUT_FILENO);
-    dup2(0, STDIN_FILENO);
+void restore_std(int saved_stdout, int saved_stdin, int saved_stderr){
+    dup2(saved_stdout, STDOUT_FILENO);
+    dup2(saved_stdin, STDIN_FILENO);
+    dup2(saved_stderr, STDERR_FILENO);
 }
 
 // Function to print out the error message and exit with value 1
@@ -85,6 +82,11 @@ int main(int argc, char* argv[]){
     //     exit(0);
     // }
 
+    // Standard Input/Output/Error
+    int saved_STDIN = dup(STDIN_FILENO);
+    int saved_STDOUT = dup(STDOUT_FILENO);
+    int saved_STDDERR = dup(STDERR_FILENO);
+
     ReadHistoryFromFile();
 
     if(get_username_syetemname_cwd()) {
@@ -95,7 +97,7 @@ int main(int argc, char* argv[]){
     size_t len;
 
     do{
-        restore_std();
+        restore_std(saved_STDOUT, saved_STDIN, saved_STDDERR);
         printf("\033[1;0m<%s@%s:%s> ",userName, systemName, relative_dir);
         fflush(stdout);
         getline(&input, &len,stdin);

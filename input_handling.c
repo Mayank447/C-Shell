@@ -101,7 +101,6 @@ void input_redirection(char* input){
             int fd = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
             dup2(fd, STDOUT_FILENO);
             close(fd);
-            printf("exit2\n");
             break;
         }
 
@@ -110,13 +109,14 @@ void input_redirection(char* input){
             int j=1;
             while(input[i+j]==' ' || input[i+j]=='\t') j++;
             char* file_name = input + i + j;
+            
             int fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-            printf("Inside\n");
+
             if(dup2(fd, STDOUT_FILENO) < 0) {
                 printf("Unable to duplicate file descriptor.");
                 return;
             }
-            printf("STDOUT_FILENO: %d\n", STDOUT_FILENO);
+            close(fd);
             break;
         }
 
@@ -124,8 +124,11 @@ void input_redirection(char* input){
             input[i] = '\0';
             char* file_name = input + i + 1;
             int fd = open(file_name, O_RDONLY, 0644);
+            if(fd<0){
+                printf("No such input file found!\n");
+                return;
+            }
             dup2(fd, STDIN_FILENO);
-            close(fd);
             break;
         }
     }
