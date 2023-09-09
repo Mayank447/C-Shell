@@ -1,3 +1,0 @@
-STDOUT_FILENO: 1
-hello
-[1;0m<root@MayankGoel-2.local:~> 

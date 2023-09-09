@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #include "shell.h"
 #include "history.h"
@@ -11,12 +10,8 @@
 #include "ls.h"
 #include "find.h"
 #include "proclore.h"
-
-const char sep[] = ";\n\r\v\f";
-
-void categorize_fg_bg_process(char* input);
-void processInput(char* input);
-
+#include "input_redirection.h"
+#include "input_handling.h"
 
 /* Function to convert the input to lowercase */
 char* lowercase(char* input){
@@ -79,63 +74,7 @@ void characterParser(char commands[][MAX_COMMAND_LENGTH], char input[], int* amp
 }
 
 
-void input_redirection(char* input){
-    // Split the input string into two parts based on > >> < 
-    int single_quotes = 0;
-    int double_quotes = 0;
-    
-    for(int i=0; i<strlen(input); i++){
-        if(input[i]=='\'')  single_quotes = (single_quotes+1)%2;
-
-        else if(input[i]=='\"') double_quotes = (double_quotes+1)%2;
-
-        else if(input[i]=='>' && input[i+1]=='>' && !single_quotes && !double_quotes){ //>> append
-            input[i] = '\0';
-            input[i+1] = '\0';
-            int j=2;
-            while(input[i+j]==' ' || input[i+j]=='\t') {
-                j++;
-                if(input[i+j]=='\0') return;
-            }
-            char* file_name = input + i + j;
-            int fd = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
-            dup2(fd, STDOUT_FILENO);
-            close(fd);
-            break;
-        }
-
-        else if(input[i]=='>' && !single_quotes && !double_quotes){
-            input[i] = '\0';
-            int j=1;
-            while(input[i+j]==' ' || input[i+j]=='\t') j++;
-            char* file_name = input + i + j;
-            
-            int fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-
-            if(dup2(fd, STDOUT_FILENO) < 0) {
-                printf("Unable to duplicate file descriptor.");
-                return;
-            }
-            close(fd);
-            break;
-        }
-
-        else if(input[i]=='<' && !single_quotes && !double_quotes){
-            input[i] = '\0';
-            char* file_name = input + i + 1;
-            int fd = open(file_name, O_RDONLY, 0644);
-            if(fd<0){
-                printf("No such input file found!\n");
-                return;
-            }
-            dup2(fd, STDIN_FILENO);
-            break;
-        }
-    }
-}
-
-
-/* Function to Tokenize the input */
+/* Function to Tokenize the input based on semicolon*/
 void tokenizeInput(char* input){
     char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
 

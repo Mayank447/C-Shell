@@ -122,7 +122,7 @@ void find(char** command_string, int arguments){
 
     for (int i=1; i<arguments; i++){
         if(command_string[i][0]=='-' && strlen(command_string[i])!=1 && flag_end != i-1){
-            printf("Incorrect syntax!\n");
+            fprintf(stderr, "Incorrect syntax!\n");
             return;
         }
         
@@ -133,7 +133,7 @@ void find(char** command_string, int arguments){
                 else if(command_string[i][f]=='f') f_flag = 1;
                 else if(command_string[i][f]=='e') e_flag = 1;
                 else{
-                    printf("Invalid flag\n");
+                    fprintf(stderr, "Invalid flag\n");
                     return;
                 }
             }
@@ -143,18 +143,18 @@ void find(char** command_string, int arguments){
 
     // Both d and f flags can't be on at the same time
     if(d_flag && f_flag){
-        printf("Invalid flags!\n");
+        fprintf(stderr, "Invalid flags!\n");
         return;
     }
 
     // Error handling for arguments
     if(arguments > flag_end + 3){
-        printf("Too many arguments sepcified\n");
+        fprintf(stderr, "Too many arguments sepcified\n");
         return;
     }
 
     else if(flag_end + 1 == arguments){
-        printf("No arguments specified\n");
+        fprintf(stderr, "No arguments specified\n");
         return;
     }
 

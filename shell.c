@@ -90,7 +90,7 @@ int main(int argc, char* argv[]){
     ReadHistoryFromFile();
 
     if(get_username_syetemname_cwd()) {
-        printf("ERROR: Getting Username or SystemName\n");
+        fprintf(stderr, "ERROR: Getting Username or SystemName\n");
     }
 
     char* input = (char*)malloc(sizeof(char)*MAX_INPUT_LENGTH);

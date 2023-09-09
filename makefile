@@ -1,7 +1,7 @@
 # Write a make file for this directory
 
-shell: shell.o history.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o
-	gcc -o shell proclore.o shell.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
+shell: shell.o history.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o input_redirection.o
+	gcc -o shell proclore.o input_redirection.o shell.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
 
 color.o: color.c
 	gcc -O -c -Wall color.c
@@ -26,6 +26,9 @@ proclore.o: proclore.c
 
 bg_process.o: bg_process.c
 	gcc -O -c -Wall bg_process.c
+
+input_redirection.o: input_redirection.c
+	gcc -O -c -Wall input_redirection.c
 
 shell.o: shell.c
 	gcc -O -c -Wall shell.c

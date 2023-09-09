@@ -158,7 +158,7 @@ void processPasteventInput(char** command_string, int arguments, char* input){
     else if(arguments == 3 && strcmp(command_string[1], "execute")==0){
         int index = atoi(command_string[2]);
         if(index>history_size || index<=0){
-            printf("ERROR: Invalid index\n");
+            fprintf(stderr, "ERROR: Invalid index\n");
             return;
         }
         if(index!=1) AddCommandToHistory(input);
@@ -168,6 +168,6 @@ void processPasteventInput(char** command_string, int arguments, char* input){
     }
 
     else{
-        printf("ERROR: Invalid command\n");
+        fprintf(stderr, "ERROR: Invalid command\n");
     }
 }
