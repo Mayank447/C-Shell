@@ -122,7 +122,7 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
 
     for (int i=1; i<arguments; i++){
         if(command_string[i][0]=='-' && strlen(command_string[i])!=1 && flag_end != i-1){
-            fprintf(stderr, "Incorrect syntax!\n");
+            print_error("Incorrect syntax!\n");
             exit(EXIT_FAILURE);
         }
         
@@ -133,7 +133,7 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
                 else if(command_string[i][f]=='f') f_flag = 1;
                 else if(command_string[i][f]=='e') e_flag = 1;
                 else{
-                    fprintf(stderr, "Invalid flag\n");
+                    print_error("Invalid flag\n");
                     exit(EXIT_FAILURE);
                 }
             }
@@ -143,18 +143,18 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
 
     // Both d and f flags can't be on at the same time
     if(d_flag && f_flag){
-        fprintf(stderr, "Invalid flags!\n");
+        print_error("Invalid flags!\n");
         exit(EXIT_FAILURE);
     }
 
     // Error handling for arguments
     if(arguments > flag_end + 3){
-        fprintf(stderr, "Too many arguments sepcified\n");
+        print_error("Too many arguments sepcified\n");
         exit(EXIT_FAILURE);
     }
 
     else if(flag_end + 1 == arguments){
-        fprintf(stderr, "No arguments specified\n");
+        print_error("No arguments specified\n");
         exit(EXIT_FAILURE);
     }
 
@@ -188,7 +188,7 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
     {
         if(COUNT==1 && PREVIOUS_TYPE==DT_DIR) {
             int err = chdir(PREVIOUS_FOUND);
-            if (err == -1) fprintf(stderr, "seek : -e : %s\n", strerror(errno));
+            if (err == -1) fprintf(stderr, "\033[0;31mseek : -e : %s\n\033[0;0m", strerror(errno));
 
             current_directory = getcwd(current_directory, MAX_PATH_LENGTH);
             relative_dir = relativePath(current_directory);

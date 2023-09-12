@@ -5,6 +5,7 @@
 
 #include "shell.h"
 #include "input_handling.h"
+#include "color.h"
 
 // Fn. to read history from file to history buffer
 void ReadHistoryFromFile()
@@ -158,7 +159,7 @@ void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int argum
     else if(arguments == 3 && strcmp(command_string[1], "execute")==0){
         int index = atoi(command_string[2]);
         if(index>history_size || index<=0){
-            fprintf(stderr, "ERROR: Invalid index\n");
+            print_error("ERROR: Invalid index\n");
             return;
         }
         if(index!=1) AddCommandToHistory(input);
@@ -168,6 +169,6 @@ void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int argum
     }
 
     else{
-        fprintf(stderr, "ERROR: Invalid command\n");
+        print_error("ERROR: Invalid command\n");
     }
 }

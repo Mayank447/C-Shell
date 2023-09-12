@@ -8,6 +8,7 @@
 #include "shell.h"
 #include "input_handling.h"
 #include "helper_functions.h"
+#include "color.h"
 
 void pipeInputString(char* input){
     int pipe_fds[2];
@@ -19,9 +20,16 @@ void pipeInputString(char* input){
     char Commands[MAX_ARGUMENTS][MAX_ARGUMENT_LENGTH];
     characterParser(Commands, input, &num_commands, '|');
 
+    for (int i=0; i<num_commands; i++){
+        removeLeadingSpaces(Commands[i]);
+        if(strcmp(Commands[i], "\0")==0) {
+            print_error("Invalid use of pipes\n");
+            return;
+        }
+    }
+
     for (int i=0; i<num_commands; i++)
     {
-        removeLeadingSpaces(Commands[i]);
         pipe(pipe_fds);
         pid = fork();
 

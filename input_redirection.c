@@ -5,6 +5,7 @@
 #include <fcntl.h>
 
 #include "shell.h"
+#include "color.h"
 
 void extractFilename(char* input, char file_name[], int i){
     int j=1;
@@ -37,7 +38,7 @@ void input_redirection(char* input){
     int l = strlen(input);
     
     if(input[l-1]=='>' || input[l-1]=='<'){
-        fprintf(stderr, "Filename not specified\n");
+        print_error("Filename not specified\n");
         exit(1);
     }
 
@@ -55,7 +56,7 @@ void input_redirection(char* input){
 
             int fd = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
             if(dup2(fd, STDOUT_FILENO) < 0) {
-                fprintf(stderr, "Invalid filename: %s", file_name);
+                fprintf(stderr, "\033[0;31mInvalid filename: %s\033[0;0m", file_name);
                 exit(1);
             }
             close(fd);
@@ -67,7 +68,7 @@ void input_redirection(char* input){
             extractFilename(input, file_name, i);
             int fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
             if(dup2(fd, STDOUT_FILENO) < 0) {
-                fprintf(stderr, "Invalid filename: %s", file_name);
+                fprintf(stderr, "\033[0;31mInvalid filename: %s\033[0;0m", file_name);
                 exit(1);
             }
             close(fd);
@@ -80,7 +81,7 @@ void input_redirection(char* input){
             
             int fd = open(file_name, O_RDONLY, 0644);
             if(fd<0){
-                fprintf(stderr, "No such input file found!\n");
+                print_error("No such input file found!\n");
                 exit(1);
             }
             dup2(fd, STDIN_FILENO);

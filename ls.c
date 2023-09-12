@@ -84,7 +84,7 @@ void listFiles_Directory(char input[][MAX_ARGUMENT_LENGTH], int arguments)
         }
 
         else{
-            fprintf(stderr, "ERROR: %s is not a valid option\n", input[i]);
+            fprintf(stderr, "\033[0;31mERROR: %s is not a valid option\n\033[0;0m", input[i]);
             return;
         }
     }

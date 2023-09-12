@@ -16,25 +16,14 @@
 #include "find.h"
 
 
-void getCommandWithArguments(char command_string[][MAX_COMMAND_LENGTH], char* input_copy, int* argument){
-    char* command;
-
-    int i=0;
-    while  ((command = strsep(&input_copy, " ")) != NULL){
-        strcpy(command_string[i++], command);
-    }
-    *argument = i;
-}
-
-
 /* Function to Tokenize the input based on semicolon*/
 void tokenizeInput(char* input){
     char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
 
-    int semicolon_count=0;
+    int semicolon_count=1;
     characterParser(Commands, input, &semicolon_count, ';');
     
-    for (int i=0; i<semicolon_count+1; i++){
+    for (int i=0; i<semicolon_count; i++){
         categorize_fg_bg_process(lowercase(removeLeadingSpaces(Commands[i++])));
     }
 }

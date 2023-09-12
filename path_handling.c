@@ -48,7 +48,7 @@ void changeDirectory(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
             strcat(temp, command_string[i]+1);
             if(chdir(temp)!=0){
                 free(temp);
-                fprintf(stderr, "ERROR: %s is not a valid directory\n", command_string[i]);
+                fprintf(stderr, "\033[0;31mERROR: %s is not a valid directory\n\033[0;0m", command_string[i]);
                 return;
             }
             free(temp);
@@ -62,7 +62,7 @@ void changeDirectory(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
             strcat(temp, command_string[i]+1);
             if(chdir(temp)!=0){
                 free(temp);
-                fprintf(stderr, "ERROR: %s is not a valid directory\n", command_string[i]);
+                fprintf(stderr, "\033[0;31mERROR: %s is not a valid directory\n\033[0;0m", command_string[i]);
                 return;
             }
             free(temp);
@@ -70,7 +70,7 @@ void changeDirectory(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
 
         // Checking if not a path relative to home dir or previous dir
         else if(chdir(command_string[i])!=0){
-            fprintf(stderr, "ERROR: %s is not a valid directory\n", command_string[i]);
+            fprintf(stderr, "\033[0;31mERROR: %s is not a valid directory\n\033[0;0m", command_string[i]);
             return;
         }
         printf("%s\n", current_directory);
