@@ -21,6 +21,7 @@ void ReadHistoryFromFile()
         fclose(fp);
         history_size = 0;
         history_pointer = 0;
+        temp_history_pointer = 0;
         return;
     }
 
@@ -35,6 +36,7 @@ void ReadHistoryFromFile()
     if (c == EOF) {
         history_pointer = 0;
         history_size = 0;
+        temp_history_pointer = 0;
         return;
     }
 
@@ -58,6 +60,7 @@ void ReadHistoryFromFile()
         i+=1;
     }
     history_size = i;
+    temp_history_pointer = history_pointer;
     fclose(fp);
 }
 
@@ -145,8 +148,8 @@ void PrintHistory(){
 }
 
 
-void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int arguments, char* input){
-    
+void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int arguments, char* input)
+{
     if(arguments == 1){ // Print the history
         PrintHistory();
     }
@@ -171,4 +174,30 @@ void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int argum
     else{
         print_error("ERROR: Invalid command\n");
     }
+}
+
+void previousCommand(char* input, int* pt){
+    if(history_size==0) 
+        return;
+    else if(temp_history_pointer!=0) 
+        temp_history_pointer = (temp_history_pointer-1)%15;
+    else 
+        temp_history_pointer = history_size - 1;
+    
+    strcpy(input, history_buffer[temp_history_pointer]);
+    *pt = strlen(input);
+    printf(" %s", input);
+}
+
+void nextCommand(char* input, int* pt){
+    if(history_size==0) 
+        return;
+    else if(temp_history_pointer == history_size-1) 
+        temp_history_pointer = 0;
+    else 
+        temp_history_pointer++;
+    
+    strcpy(input, history_buffer[temp_history_pointer]);
+    *pt = strlen(input);
+    printf(" %s", input);
 }

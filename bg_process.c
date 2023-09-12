@@ -8,8 +8,8 @@
 
 #include "shell.h"
 
-void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, int is_background){
-
+void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, int is_background)
+{
     // Get all the arguments for the command
     char* arguments[MAX_ARGUMENTS];
     for(int i=0; i<argument; i++){
@@ -21,9 +21,12 @@ void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, i
     int status;
 
     // Child process
-    if(pid==0){
+    if(pid<0) perror("Fork failed:");
+    
+    else if(pid==0){
         execvp(command_string[0], arguments);
         perror("Invalid command:");
+        exit(1);
     }
 
     else{

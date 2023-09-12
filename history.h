@@ -6,5 +6,7 @@ void processPasteventInput(char command_string[][1000], int arguments, char* inp
 void AddCommandToHistory(char* input);
 void WriteToHistory();
 void deleteHistory();
+void previousCommand(char* input, int* pt);
+void nextCommand(char* input, int* pt);
 
 #endif

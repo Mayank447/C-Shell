@@ -17,7 +17,8 @@
 
 
 /* Function to Tokenize the input based on semicolon*/
-void tokenizeInput(char* input){
+void tokenizeInput(char* input)
+{
     char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
 
     int semicolon_count=1;
@@ -32,7 +33,7 @@ void tokenizeInput(char* input){
 void categorize_fg_bg_process(char input[])
 {
     char Commands[MAX_ARGUMENTS][MAX_COMMAND_LENGTH];
-    int ampercent_count=0, arguments;
+    int ampercent_count=0, arguments=1;
     
     int condition = (input[strlen(input)-1]=='&') ? 0:1;
     characterParser(Commands, input, &ampercent_count, '&');
@@ -41,9 +42,7 @@ void categorize_fg_bg_process(char input[])
     int i=0;
 
     for(; i < ampercent_count; i++){
-        input_redirection(Commands[i]);
         characterParser(command_string, removeLeadingSpaces(Commands[i]), &arguments, ' ');
-        arguments += 1;
         execute_command(command_string, arguments, 1);
     }
 
