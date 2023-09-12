@@ -29,6 +29,7 @@ void extractFilename(char* input, char file_name[], int i){
     }
 }
 
+
 void input_redirection(char* input){
     // Split the input string into two parts based on > >> < 
     int single_quotes = 0;
@@ -41,6 +42,7 @@ void input_redirection(char* input){
     }
 
     for(int i=0; i<l; i++){
+        
         if(input[i]=='\'')  single_quotes = (single_quotes+1)%2;
 
         else if(input[i]=='\"') double_quotes = (double_quotes+1)%2;
@@ -64,7 +66,6 @@ void input_redirection(char* input){
             char file_name[MAX_FILE_NAME_LENGTH];
             extractFilename(input, file_name, i);
             int fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-
             if(dup2(fd, STDOUT_FILENO) < 0) {
                 fprintf(stderr, "Invalid filename: %s", file_name);
                 exit(1);

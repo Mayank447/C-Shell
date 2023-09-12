@@ -43,7 +43,7 @@ void findFiles_DirectoryRecursively(char* file, char* basePath, int d_flag, int 
 
     // Unable to open directory stream
     if (!dir)
-        return;
+        exit(EXIT_FAILURE);
     
     while ((dp = readdir(dir)) != NULL)
     {
@@ -123,7 +123,7 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
     for (int i=1; i<arguments; i++){
         if(command_string[i][0]=='-' && strlen(command_string[i])!=1 && flag_end != i-1){
             fprintf(stderr, "Incorrect syntax!\n");
-            return;
+            exit(EXIT_FAILURE);
         }
         
         if(command_string[i][0]=='-' && strlen(command_string[i])!=1){
@@ -134,7 +134,7 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
                 else if(command_string[i][f]=='e') e_flag = 1;
                 else{
                     fprintf(stderr, "Invalid flag\n");
-                    return;
+                    exit(EXIT_FAILURE);
                 }
             }
             flag_end = i;
@@ -144,18 +144,18 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
     // Both d and f flags can't be on at the same time
     if(d_flag && f_flag){
         fprintf(stderr, "Invalid flags!\n");
-        return;
+        exit(EXIT_FAILURE);
     }
 
     // Error handling for arguments
     if(arguments > flag_end + 3){
         fprintf(stderr, "Too many arguments sepcified\n");
-        return;
+        exit(EXIT_FAILURE);
     }
 
     else if(flag_end + 1 == arguments){
         fprintf(stderr, "No arguments specified\n");
-        return;
+        exit(EXIT_FAILURE);
     }
 
     char* dir =  "."; char* temp=NULL;

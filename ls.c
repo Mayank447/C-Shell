@@ -113,6 +113,7 @@ void listFiles_Directory(char input[][MAX_ARGUMENT_LENGTH], int arguments)
 
     // Trying to open the given directory and if it fails, throw error and exit
     struct dirent *d;
+    printf("%s:\n", path);
 	DIR *dh = opendir(path);
 
 	if (!dh){

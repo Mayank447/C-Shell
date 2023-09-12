@@ -61,3 +61,15 @@ void characterParser(char commands[][MAX_COMMAND_LENGTH], char input[], int* amp
     }
     strcpy(commands[command_count], input + j);
 }
+
+/*Function to delete single and double quotes from a string*/
+void deleteQuotes(char* input){
+    int l = strlen(input);
+    int j=0;
+    for(int i=0; i<l; i++){
+        if(input[i]!='\"' || input[i]!='\''){
+            input[j++] = input[i];
+        }
+    }
+    input[j] = '\0';
+}
