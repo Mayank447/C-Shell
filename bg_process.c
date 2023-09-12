@@ -24,14 +24,12 @@ void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, i
     if(pid==0){
         execvp(command_string[0], arguments);
         perror("Invalid command:");
-        exit(EXIT_FAILURE);
     }
 
     else{
         if(is_background) printf("%d\n", pid);
         else{
             waitpid(pid, &status, 0);
-            exit(EXIT_SUCCESS);
         }
     }
 }

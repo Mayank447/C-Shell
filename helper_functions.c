@@ -63,13 +63,16 @@ void characterParser(char commands[][MAX_COMMAND_LENGTH], char input[], int* amp
 }
 
 /*Function to delete single and double quotes from a string*/
-void deleteQuotes(char* input){
-    int l = strlen(input);
-    int j=0;
-    for(int i=0; i<l; i++){
-        if(input[i]!='\"' || input[i]!='\''){
-            input[j++] = input[i];
+void deleteQuotes(char input[][MAX_ARGUMENT_LENGTH], int arguments){
+    
+    for(int k=0; k<arguments; k++){
+        int l = strlen(input[k]);
+        int j=0;
+        for(int i=0; i<l; i++){
+            if(input[k][i]!='\"' && input[k][i]!='\''){
+                input[k][j++] = input[k][i];
+            }
         }
+        input[k][j] = '\0';
     }
-    input[j] = '\0';
 }

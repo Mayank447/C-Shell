@@ -38,6 +38,11 @@ char** history_buffer;
 int history_pointer;
 int history_size;
 
+// Saved File descriptors
+int saved_STDIN;
+int saved_STDOUT;
+int saved_STDDERR;
+
 int get_username_syetemname_cwd(){
     userName = getlogin();
     if(uname(&systemInfo)>0){

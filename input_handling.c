@@ -53,7 +53,8 @@ void categorize_fg_bg_process(char input[])
 
     for(; i < ampercent_count; i++){
         input_redirection(Commands[i]);
-        getCommandWithArguments(command_string, removeLeadingSpaces(Commands[i]), &arguments);
+        characterParser(command_string, removeLeadingSpaces(Commands[i]), &arguments, ' ');
+        arguments += 1;
         execute_command(command_string, arguments, 1);
     }
 
@@ -70,15 +71,15 @@ void processInput(char input[])
 {
     input_redirection(input);
     removeLeadingSpaces(input);
-    deleteQuotes(input);
     
     char input_copy[MAX_COMMAND_LENGTH];
     sprintf(input_copy, "%s", input);
 
-    int n_arguments;
+    int n_arguments=1;
     char command_string[MAX_ARGUMENTS][MAX_ARGUMENT_LENGTH];
-    getCommandWithArguments(command_string, input_copy, &n_arguments);
-    
+    characterParser(command_string, input_copy, &n_arguments, ' ');
+    deleteQuotes(command_string, n_arguments);
+
     if(strcmp(command_string[0], "pastevents")!=0){
         if(history_size==0 || strcmp(input, history_buffer[history_pointer])!=0)
         AddCommandToHistory(input);
