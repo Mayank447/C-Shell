@@ -86,7 +86,7 @@ void categorize_fg_bg_process(char input[])
     // If not a bg process
     if(condition){
         removeLeadingSpaces(Commands[i]);
-        addForegroundCommandToHistory(Commands[i]);
+        //addForegroundCommandToHistory(Commands[i]);
         WriteToHistory();
         
         pipeInputString(Commands[i]);
