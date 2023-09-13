@@ -11,6 +11,7 @@
 void ReadHistoryFromFile()
 {
     history_buffer = (char**)malloc(sizeof(char*) * MAX_HISTORY_SIZE);
+    history_string = (char*)malloc(sizeof(char) * MAX_INPUT_LENGTH);
 
     if (access(".CShell_history", F_OK) != 0){
         FILE* fp = fopen(".CShell_history", "w");
@@ -60,13 +61,12 @@ void ReadHistoryFromFile()
         i+=1;
     }
     history_size = i;
-    temp_history_pointer = history_pointer;
+    if(history_size) temp_history_pointer = (history_pointer + 1) % MAX_HISTORY_SIZE;
     fclose(fp);
 }
 
 
 // Fn. to write history from history buffer to the file
-/* Need to append the commands and change the file pointer to the beginning */
 void WriteToHistory()
 {
     char* path = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
@@ -81,17 +81,17 @@ void WriteToHistory()
     fprintf(fp, "%d\n", history_pointer);
     
     int i=0;
-    while(i<history_size-1){
+    while(i < history_size - 1){
         fprintf(fp, "%s\n", history_buffer[i++]);
     }
-    if(history_size!=0) fprintf(fp, "%s", history_buffer[i]);
+    fprintf(fp, "%s", history_buffer[i]); //Writing the last line
     fclose(fp);
 }
 
 
 // Fn. to add a command to history buffer
-void AddCommandToHistory(char* input){
-
+void AddCommandToHistory(char* input)
+{
     if(history_size == MAX_HISTORY_SIZE){
         history_pointer = (history_pointer+1) % MAX_HISTORY_SIZE;
         free(history_buffer[history_pointer]);
@@ -120,7 +120,6 @@ void deleteHistory(){
     if(history_buffer!=NULL) free(history_buffer);
 }
 
-
 // Fn. to clear the history
 void purgeHistory(){
     for (int i=0; i<history_size; i++){
@@ -128,8 +127,9 @@ void purgeHistory(){
     }
     history_size = 0;
     history_pointer = 0;
+    WriteToHistory();
+    ReadHistoryFromFile();
 }
-
 
 // Fn. to print the history
 void PrintHistory(){
@@ -177,7 +177,7 @@ void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int argum
 }
 
 void previousCommand(char* input, int* pt){
-    if(history_size==0) 
+    if(history_size==0)
         return;
     else if(temp_history_pointer!=0) 
         temp_history_pointer = (temp_history_pointer-1) % MAX_HISTORY_SIZE;

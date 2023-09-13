@@ -8,6 +8,7 @@
 
 #include "path_handling.h"
 #include "input_handling.h"
+#include "helper_functions.h"
 #include "history.h"
 #include "raw_mode.h"
 #include "bg_process.h"
@@ -45,6 +46,7 @@ char** history_buffer;
 int history_pointer;
 int history_size;
 int temp_history_pointer; //For up and down arrow
+char* history_string;
 
 // Saved File descriptors
 int saved_STDIN;
@@ -118,6 +120,7 @@ void exit_shell(){
     free(current_directory);
     free(previous_directory);
     free(relative_dir);
+    free(history_string);
 }
 
 
@@ -159,10 +162,10 @@ int main(int argc, char* argv[]){
         
         process_time[0] = '\0';
         rawModeInput(c, input, pt);
-        //printf("%s\n", input);
-        tokenizeInput(input);
+        if(!strlen(input)) continue;
+        
+        tokenizeInput(removeLeadingSpaces(input));
         bg_process_finished();
-        // WriteToHistory();
     }
 
     disableRawMode();

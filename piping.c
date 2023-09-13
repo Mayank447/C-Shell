@@ -34,12 +34,6 @@ void pipeInputString(char* input){
         pipe(pipe_fds);
         pid = fork();
 
-        store_process();
-        process_buffer[process_count].bg = 0;
-        strcpy(process_buffer[process_count].entire_command, Commands[i]);
-        getCommandfromString(Commands[i], process_buffer[process_count].command);
-        process_buffer[process_count++].pid = pid;
-
         if (pid == -1) {
             perror("fork");
             exit(EXIT_FAILURE);
@@ -60,6 +54,12 @@ void pipeInputString(char* input){
         } 
         
         else {
+            store_process();
+            process_buffer[process_count].bg = 0;
+            strcpy(process_buffer[process_count].entire_command, Commands[i]);
+            getCommandfromString(Commands[i], process_buffer[process_count].command);
+            process_buffer[process_count++].pid = pid;
+
             // Parent process
             close(pipe_fds[1]); // Close the write end of the pipe
             waitpid(pid, &status, 0);

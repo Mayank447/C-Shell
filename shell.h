@@ -18,6 +18,7 @@ extern char** history_buffer;
 extern int history_pointer;
 extern int history_size;
 extern int temp_history_pointer;
+extern char* history_string;
 
 extern int MAX_COMMANDS;
 extern int MAX_COMMAND_LENGTH;

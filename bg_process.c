@@ -36,7 +36,7 @@ void bg_process_finished()
             if(process_buffer[i].bg==0) {
                 int time_taken = time(NULL) - process_buffer[i].time_initialized;
                 if(time_taken > 2){
-                    sprintf(process_time, " %s : %d", process_buffer[i].command, time_taken);
+                    sprintf(process_time, ":%s : %d", process_buffer[i].command, time_taken);
                 }
             }
 

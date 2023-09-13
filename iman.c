@@ -19,5 +19,5 @@ void iman(char command_string[][MAX_ARGUMENT_LENGTH], int n_arguments){
         print_error("iMan: too many arguments\n");
     }
 
-
+    
 }

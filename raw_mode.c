@@ -9,7 +9,6 @@
 
 void rawModeInput(char c, char* inp, int pt)
 {
-    temp_history_pointer = history_pointer;
     int len=0;
     while (read(STDIN_FILENO, &c, 1) == 1) {
         if (iscntrl(c)) {

@@ -17,6 +17,20 @@
 #include "iman.h"
 #include "activities.h"
 
+void addForegroundCommandToHistory(char* command)
+{
+    if(strcmp(command, "pastevents")!=0 && strcmp(command, "pastevents purge")){
+        if(history_size && strcmp(command, history_buffer[history_pointer])) 
+            strcat(history_string, command);
+    }
+    else if(strcmp(command, "pastevents purge")==0){
+        purgeHistory();
+    }
+    // else if(strnstr(command, "pastevents execute")==0){
+    //     PrintHistory();
+    // }
+}
+
 
 /* Function to Tokenize the input based on semicolon*/
 void tokenizeInput(char* input)
@@ -24,11 +38,19 @@ void tokenizeInput(char* input)
     char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
 
     int semicolon_count=1;
+    int condition = (input[strlen(input)-1]==';') ? 1:0;
     characterParser(Commands, input, &semicolon_count, ';');
-    
-    for (int i=0; i<semicolon_count; i++){
-        categorize_fg_bg_process(lowercase(removeLeadingSpaces(Commands[i++])));
+    memset(history_string, '\0', MAX_INPUT_LENGTH);
+
+    for (int i=0; i<semicolon_count - condition; i++){
+        categorize_fg_bg_process(lowercase(removeLeadingSpaces(Commands[i])));
+        if(semicolon_count > 1){
+            strcat(history_string, ";");
+        }
     }
+    if(condition) strcat(history_string, ";");
+    AddCommandToHistory(history_string);
+    WriteToHistory();
 }
 
 
@@ -45,18 +67,29 @@ void categorize_fg_bg_process(char input[])
 
     for(; i < ampercent_count; i++)
     {
+        // Writing to the history_string
+        arguments = 1;
+        removeLeadingSpaces(Commands[i]);
+        strcat(history_string, Commands[i]);
+        strcat(history_string, "& ");
+
+        // Storing the background process in the process buffer
         store_process();
         process_buffer[process_count].bg = 1;
         strcpy(process_buffer[process_count].entire_command, Commands[i]);
-        
-        characterParser(command_string, removeLeadingSpaces(Commands[i]), &arguments, ' ');
+
+        characterParser(command_string, Commands[i], &arguments, ' ');
         strcpy(process_buffer[process_count].command, command_string[0]);
         execute_command(command_string, arguments, 1);
     }
 
     // If not a bg process
     if(condition){
-        pipeInputString(removeLeadingSpaces(Commands[i]));
+        removeLeadingSpaces(Commands[i]);
+        addForegroundCommandToHistory(Commands[i]);
+        WriteToHistory();
+        
+        pipeInputString(Commands[i]);
     }
 }
 
@@ -75,14 +108,8 @@ void processInput(char input[])
     characterParser(command_string, input_copy, &n_arguments, ' ');
     deleteQuotes(command_string, n_arguments);
 
-    if(strcmp(command_string[0], "pastevents")!=0){
-        if(history_size==0 || strcmp(input, history_buffer[history_pointer])!=0)
-        AddCommandToHistory(input);
-        WriteToHistory();
-    }
-
     if(strcmp(command_string[0], "exit")==0){
-        WriteToHistory();
+        // WriteToHistory();
         deleteHistory();
         exit(0); // Closing the shell if the user typed exit
     }
