@@ -14,52 +14,61 @@
 #include "shell.h"
 #include "color.h"
 
-void print_permissions_file_type(mode_t mode){
-    if (S_ISREG(mode)) putchar('-');
-    else if (S_ISDIR(mode)) putchar('d');
-    else if (S_ISCHR(mode)) putchar('c');
-    else if (S_ISBLK(mode)) putchar('b');                                                // this block prints file type
-    else if (S_ISFIFO(mode)) putchar('p');
-    else if (S_ISLNK(mode)) putchar('l');
-    else if (S_ISSOCK(mode)) putchar('s');
-    else putchar('-');
+int compare_lexo(void* a, void* b){
+    struct lexoFileDir *file1 = (const struct lexoFileDir*)a;
+    struct lexoFileDir *file2 = (const struct lexoFileDir*)b;
+    return strcmp(file1->filename, file2->filename);
 }
 
-void print_permissions(mode_t mode) {
-    print_permissions_file_type(mode);
-    putchar((mode & S_IRUSR) ? 'r' : '-');
-    putchar((mode & S_IWUSR) ? 'w' : '-');
-    putchar((mode & S_IXUSR) ? 'x' : '-');
-    putchar((mode & S_IRGRP) ? 'r' : '-');
-    putchar((mode & S_IWGRP) ? 'w' : '-');
-    putchar((mode & S_IXGRP) ? 'x' : '-');
-    putchar((mode & S_IROTH) ? 'r' : '-');
-    putchar((mode & S_IWOTH) ? 'w' : '-');
-    putchar((mode & S_IXOTH) ? 'x' : '-');
+void print_permissions_file_type(mode_t mode, char* print_string){
+    if (S_ISREG(mode)) strcat(print_string, "-");
+    else if (S_ISDIR(mode)) strcat(print_string, "d");
+    else if (S_ISCHR(mode)) strcat(print_string, "c");
+    else if (S_ISBLK(mode)) strcat(print_string, "b");                                                // this block prints file type
+    else if (S_ISFIFO(mode)) strcat(print_string, "p");
+    else if (S_ISLNK(mode)) strcat(print_string, "l");
+    else if (S_ISSOCK(mode)) strcat(print_string, "s");
+    else strcat(print_string, "-");
 }
 
-void l_flag_print(struct stat file_stat)
+void print_permissions(mode_t mode, char* print_string) {
+    print_permissions_file_type(mode, print_string);
+    strcat(print_string, (mode & S_IRUSR) ? "r" : "-");
+    strcat(print_string, (mode & S_IWUSR) ? "w" : "-");
+    strcat(print_string, (mode & S_IXUSR) ? "x" : "-");
+    strcat(print_string, (mode & S_IRGRP) ? "r" : "-");
+    strcat(print_string, (mode & S_IWGRP) ? "w" : "-");
+    strcat(print_string, (mode & S_IXGRP) ? "x" : "-");
+    strcat(print_string, (mode & S_IROTH) ? "r" : "-");
+    strcat(print_string, (mode & S_IWOTH) ? "w" : "-");
+    strcat(print_string, (mode & S_IXOTH) ? "x" : "-");
+}
+
+void l_flag_print(struct stat file_stat, char* print_string)
 {
     //Permissions
-    print_permissions(file_stat.st_mode);
+    print_permissions(file_stat.st_mode, print_string);
 
-    //Hard links  
-    printf("%d\t", file_stat.st_nlink); 
+    //Hard links 
+    sprintf(print_string + strlen(print_string), "%d\t",file_stat.st_nlink); 
 
     // User and Group name
     struct passwd *user_info = getpwuid(file_stat.st_uid); 
     struct group *group_info = getgrgid(file_stat.st_gid);
 
-    printf("%s\t%s\t", (user_info != NULL) ? user_info->pw_name : "unknown", 
-            (group_info != NULL) ? group_info->gr_name : "unknown");
-
+    strcat(print_string, (user_info != NULL) ? user_info->pw_name : "unknown");
+    strcat(print_string, "\t");
+    strcat(print_string, (group_info != NULL) ? group_info->gr_name : "unknown");
+    strcat(print_string, "\t");
+    
     // File size
-    printf("%lld\t", file_stat.st_size);
+    sprintf(print_string + strlen(print_string), "%lld\t", file_stat.st_size);
 
     // Last modified time
     char time_buffer[100];
     strftime(time_buffer, sizeof(time_buffer), "%Y-%m-%d %H:%M:%S", localtime(&file_stat.st_mtime));
-    printf("%s\t", time_buffer);
+    strcat(print_string, time_buffer);
+    strcat(print_string, "\t");
 }
 
 
@@ -113,7 +122,6 @@ void listFiles_Directory(char input[][MAX_ARGUMENT_LENGTH], int arguments)
 
     // Trying to open the given directory and if it fails, throw error and exit
     struct dirent *d;
-    printf("%s:\n", path);
 	DIR *dh = opendir(path);
 
 	if (!dh){
@@ -125,12 +133,16 @@ void listFiles_Directory(char input[][MAX_ARGUMENT_LENGTH], int arguments)
         free(dh);
         return;
 	}
-
+    
+    struct lexoFileDir files_and_directories[MAX_FILES]; //Storing for lexographic printing
+    int i = 0;
 
     // Reading the directory and printing the files and directories
     while((d=readdir(dh))!=NULL){
-        if (!op_a && d->d_name[0] == '.')
-			continue;
+        char temp[MAX_FILE_PROP_LENGTH];
+        memset(temp, '\0', sizeof(temp));
+
+        if (!op_a && d->d_name[0] == '.') continue;
 
         struct stat file_stat;
         if (stat(d->d_name, &file_stat) == -1) {
@@ -138,18 +150,25 @@ void listFiles_Directory(char input[][MAX_ARGUMENT_LENGTH], int arguments)
             return;
         }
 
-		if(op_l) l_flag_print(file_stat);
+		if(op_l) l_flag_print(file_stat, temp);
 
-		if(d->d_type == DT_DIR) 
-            print_blue(d->d_name);
+		if(d->d_type == DT_DIR)
+            sprintf(files_and_directories[i++].filename, "\033[0;34m%s\033[0;0m", d->d_name);
 
         else if(file_stat.st_mode & S_IXUSR)
-            print_green(d->d_name);
+            sprintf(files_and_directories[i++].filename, "\033[0;32m%s\033[0;0m", d->d_name);
         
         else 
-            print_white(d->d_name);
+            sprintf(files_and_directories[i++].filename, "\033[0;37m%s\033[0;0m", d->d_name);
+        
+        strcpy(files_and_directories[i].all_details, temp);
+    }
 
-        printf("\n");
+    //Sorting it lexographically
+    qsort(files_and_directories, i, sizeof(struct lexoFileDir), compare_lexo);
+
+    for(int j=0; j<i; j++){
+        printf("%s%s\n", files_and_directories[j].all_details, files_and_directories[j].filename);
     }
 
     // Freeing the allocated memory

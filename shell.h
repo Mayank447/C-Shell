@@ -3,6 +3,11 @@
 
 #include "bg_process.h"
 
+struct lexoFileDir {
+    char all_details[1000];
+    char filename[1000];
+};
+
 extern char* home_directory;
 extern char* current_directory;
 extern char* relative_dir;
@@ -13,6 +18,8 @@ extern int MAX_INPUT_LENGTH;
 extern int MAX_PATH_LENGTH;
 extern int MAX_HISTORY_SIZE;
 extern int MAX_FILE_NAME_LENGTH;
+extern int MAX_FILES;
+extern int MAX_FILE_PROP_LENGTH;
 
 extern char** history_buffer;
 extern int history_pointer;
