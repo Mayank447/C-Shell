@@ -10,6 +10,8 @@
 #include "input_handling.h"
 #include "history.h"
 #include "raw_mode.h"
+#include "bg_process.h"
+#include "color.h"
 
 
 // Defining some length variables(Maximum charater lengths)
@@ -23,11 +25,14 @@ int MAX_COMMAND_LENGTH = 1000;
 int MAX_ARGUMENTS = 100;
 int MAX_ARGUMENT_LENGTH = 1000;
 
+int MAX_PROCESSES = 1000;
+
 // Global Variables - > System Info
 char* systemName;
 char* userName;
 struct utsname systemInfo;
 int SHELL_PID;
+char* process_time;
 
 // Global Variables - > Directory handling
 char* home_directory;
@@ -48,6 +53,10 @@ int saved_STDDERR;
 
 // Terminal Settings
 struct termios orig_termios;
+
+//Processes
+int process_count;
+struct Process process_buffer[1000];
 
 // Function to print out the error message and exit with value 1
 void die(const char *s){
@@ -84,6 +93,9 @@ int get_username_syetemname_cwd()
     strcpy(current_directory, home_directory);
     strcpy(previous_directory, home_directory);
     relative_dir = relativePath(current_directory);
+    
+    process_time = (char*)malloc(sizeof(char) * MAX_COMMAND_LENGTH);
+    process_time[0] = '\0';
     return 0;
 }
 
@@ -99,6 +111,15 @@ void custom_error(const char *s){
     fprintf(stderr, "\n");
 }
 
+void exit_shell(){
+    free(userName);
+    free(systemName);
+    free(home_directory);
+    free(current_directory);
+    free(previous_directory);
+    free(relative_dir);
+}
+
 
 int main(int argc, char* argv[]){
 
@@ -109,6 +130,9 @@ int main(int argc, char* argv[]){
     //     exit(0);
     // }
 
+    // PROCESS HANDLING
+    process_count = 0;
+
     // Standard Input/Output/Error
     saved_STDIN = dup(STDIN_FILENO);
     saved_STDOUT = dup(STDOUT_FILENO);
@@ -118,7 +142,7 @@ int main(int argc, char* argv[]){
     enableRawMode();
 
     if(get_username_syetemname_cwd()) {
-        fprintf(stderr, "ERROR: Getting Username or SystemName\n");
+        print_error("ERROR: Getting Username or SystemName\n");
     }
 
     char* input = (char*)malloc(sizeof(char) * MAX_INPUT_LENGTH);
@@ -130,18 +154,20 @@ int main(int argc, char* argv[]){
         int pt = 0;
 
         restore_std(saved_STDOUT, saved_STDIN, saved_STDDERR);
-        printf("\033[1;0m<%s@%s:%s> ",userName, systemName, relative_dir);
+        printf("\033[1;0m<%s@%s:%s%s> ",userName, systemName, relative_dir, process_time);
         fflush(stdout);
         
+        process_time[0] = '\0';
         rawModeInput(c, input, pt);
         //printf("%s\n", input);
         tokenizeInput(input);
-        
-        WriteToHistory();
+        bg_process_finished();
+        // WriteToHistory();
     }
 
     disableRawMode();
     free(input);
     deleteHistory();
+    exit_shell();
     exit(0);
 }

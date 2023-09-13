@@ -14,6 +14,8 @@
 #include "ls.h"
 #include "path_handling.h"
 #include "find.h"
+#include "iman.h"
+#include "activities.h"
 
 
 /* Function to Tokenize the input based on semicolon*/
@@ -38,17 +40,22 @@ void categorize_fg_bg_process(char input[])
     int condition = (input[strlen(input)-1]=='&') ? 0:1;
     characterParser(Commands, input, &ampercent_count, '&');
 
-    char command_string[MAX_ARGUMENTS][MAX_COMMAND_LENGTH];
+    char command_string[MAX_ARGUMENTS][MAX_ARGUMENT_LENGTH];
     int i=0;
 
-    for(; i < ampercent_count; i++){
+    for(; i < ampercent_count; i++)
+    {
+        store_process();
+        process_buffer[process_count].bg = 1;
+        strcpy(process_buffer[process_count].entire_command, Commands[i]);
+        
         characterParser(command_string, removeLeadingSpaces(Commands[i]), &arguments, ' ');
+        strcpy(process_buffer[process_count].command, command_string[0]);
         execute_command(command_string, arguments, 1);
     }
 
     // If not a bg process
     if(condition){
-        //processInput(removeLeadingSpaces(Commands[i]));
         pipeInputString(removeLeadingSpaces(Commands[i]));
     }
 }
@@ -71,6 +78,7 @@ void processInput(char input[])
     if(strcmp(command_string[0], "pastevents")!=0){
         if(history_size==0 || strcmp(input, history_buffer[history_pointer])!=0)
         AddCommandToHistory(input);
+        WriteToHistory();
     }
 
     if(strcmp(command_string[0], "exit")==0){
@@ -87,6 +95,10 @@ void processInput(char input[])
         listFiles_Directory(command_string, n_arguments);
     }
 
+    else if(strcmp(command_string[0], "activities")==0){
+        activities();
+    }
+
     else if(strcmp(command_string[0], "proclore")==0){
         proclore(command_string, n_arguments);
     }
@@ -97,6 +109,10 @@ void processInput(char input[])
 
     else if(strcmp(command_string[0], "pastevents")==0){
         processPasteventInput(command_string, n_arguments, input);
+    }
+
+    else if(strcmp(command_string[0], "iman")==0){
+        iman(command_string, n_arguments);
     }
 
     else{

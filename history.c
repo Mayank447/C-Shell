@@ -10,7 +10,7 @@
 // Fn. to read history from file to history buffer
 void ReadHistoryFromFile()
 {
-    history_buffer = (char**)malloc(sizeof(char*)*MAX_HISTORY_SIZE);
+    history_buffer = (char**)malloc(sizeof(char*) * MAX_HISTORY_SIZE);
 
     if (access(".CShell_history", F_OK) != 0){
         FILE* fp = fopen(".CShell_history", "w");
@@ -93,7 +93,7 @@ void WriteToHistory()
 void AddCommandToHistory(char* input){
 
     if(history_size == MAX_HISTORY_SIZE){
-        history_pointer = (history_pointer+1)%15;
+        history_pointer = (history_pointer+1) % MAX_HISTORY_SIZE;
         free(history_buffer[history_pointer]);
         history_buffer[history_pointer] = (char*)malloc(sizeof(char)*MAX_INPUT_LENGTH);
         strcpy(history_buffer[history_pointer], input);
@@ -134,10 +134,10 @@ void purgeHistory(){
 // Fn. to print the history
 void PrintHistory(){
     if(history_size == MAX_HISTORY_SIZE){
-        int j = (history_pointer+1)%15;
+        int j = (history_pointer+1) % MAX_HISTORY_SIZE;
         for (int i=0; i<history_size; i++){
             printf("%s\n", history_buffer[j]);
-            j = (j+1)%15;
+            j = (j+1) % MAX_HISTORY_SIZE;
         }
         return;
     }
@@ -167,7 +167,7 @@ void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int argum
         }
         if(index!=1) AddCommandToHistory(input);
         char* input = (char*)malloc(sizeof(char)*MAX_INPUT_LENGTH);
-        strcpy(input, history_buffer[(history_pointer-index+1)%15]);
+        strcpy(input, history_buffer[(history_pointer-index+1) % MAX_HISTORY_SIZE]);
         tokenizeInput(input);
     }
 
@@ -180,7 +180,7 @@ void previousCommand(char* input, int* pt){
     if(history_size==0) 
         return;
     else if(temp_history_pointer!=0) 
-        temp_history_pointer = (temp_history_pointer-1)%15;
+        temp_history_pointer = (temp_history_pointer-1) % MAX_HISTORY_SIZE;
     else 
         temp_history_pointer = history_size - 1;
     

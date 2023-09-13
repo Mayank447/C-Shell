@@ -76,3 +76,13 @@ void deleteQuotes(char input[][MAX_ARGUMENT_LENGTH], int arguments){
         input[k][j] = '\0';
     }
 }
+
+//Get the main command before a space from a string
+void getCommandfromString(char* input, char* command){
+    int i=0;
+    while(input[i]!=' ' && input[i]!='\0'){
+        command[i] = input[i];
+        i++;
+    }
+    command[i] = '\0';
+}

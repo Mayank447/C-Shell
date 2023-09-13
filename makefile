@@ -1,10 +1,13 @@
 # Write a make file for this directory
 
-shell: main.o raw_mode.o piping.o history.o helper_functions.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o input_redirection.o
-	gcc -o shell piping.o raw_mode.o proclore.o helper_functions.o input_redirection.o main.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
+shell: main.o iman.o raw_mode.o piping.o history.o activities.o helper_functions.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o input_redirection.o
+	gcc -o shell piping.o activities.o raw_mode.o iman.o proclore.o helper_functions.o input_redirection.o main.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
 
 color.o: color.c
 	gcc -O -c -Wall color.c
+
+iman.o: iman.c
+	gcc -O -c -Wall iman.c
 
 raw_mode.o: raw_mode.c
 	gcc -O -c -Wall raw_mode.c
@@ -29,6 +32,9 @@ path_handling.o: path_handling.c
 
 proclore.o: proclore.c
 	gcc -O -c -Wall proclore.c
+
+activities.o: activities.c
+	gcc -O -c -Wall activities.c
 
 bg_process.o: bg_process.c
 	gcc -O -c -Wall bg_process.c
