@@ -69,7 +69,9 @@ void rawModeInput(char c, char* inp, int pt)
                 }
             } 
 
-            else if (c == 4) exit(0); // Ctrl+D (EOF)
+            else if (c == 4 || c==26) exit(0); // Ctrl+D (EOF)
+
+            //else if(c == 3)
 
             else {
                 printf("%d\n", c);

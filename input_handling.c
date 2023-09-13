@@ -16,6 +16,7 @@
 #include "find.h"
 #include "iman.h"
 #include "activities.h"
+#include "signal_handling.h"
 
 void addForegroundCommandToHistory(char* command)
 {
@@ -128,6 +129,10 @@ void processInput(char input[])
 
     else if(strcmp(command_string[0], "proclore")==0){
         proclore(command_string, n_arguments);
+    }
+
+    else if(strcmp(command_string[0], "ping")==0){
+        signal_handler(command_string, n_arguments);
     }
 
     else if(strcmp(command_string[0], "seek")==0){

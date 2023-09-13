@@ -1,7 +1,7 @@
 # Write a make file for this directory
 
-shell: main.o iman.o raw_mode.o piping.o history.o activities.o helper_functions.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o input_redirection.o
-	gcc -o shell piping.o activities.o raw_mode.o iman.o proclore.o helper_functions.o input_redirection.o main.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
+shell: main.o iman.o raw_mode.o signal_handling.o piping.o history.o activities.o helper_functions.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o input_redirection.o
+	gcc -o shell piping.o activities.o signal_handling.o raw_mode.o iman.o proclore.o helper_functions.o input_redirection.o main.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
 
 color.o: color.c
 	gcc -O -c -Wall color.c
@@ -38,6 +38,9 @@ activities.o: activities.c
 
 bg_process.o: bg_process.c
 	gcc -O -c -Wall bg_process.c
+
+signal_handling.o: signal_handling.c
+	gcc -O -c -Wall signal_handling.c
 
 input_redirection.o: input_redirection.c
 	gcc -O -c -Wall input_redirection.c
