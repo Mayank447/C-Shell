@@ -1,7 +1,7 @@
 # Write a make file for this directory
 
-a.out: main.o iman.o raw_mode.o signal_handling.o piping.o history.o activities.o helper_functions.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o input_redirection.o
-	gcc -o a.out piping.o activities.o signal_handling.o raw_mode.o iman.o proclore.o helper_functions.o input_redirection.o main.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
+a.out: main.o neonate.o iman.o raw_mode.o signal_handling.o piping.o history.o activities.o helper_functions.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o input_redirection.o
+	gcc -o a.out piping.o neonate.o activities.o signal_handling.o raw_mode.o iman.o proclore.o helper_functions.o input_redirection.o main.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
 
 color.o: color.c
 	gcc -O -c -Wall color.c
@@ -11,6 +11,9 @@ iman.o: iman.c
 
 raw_mode.o: raw_mode.c
 	gcc -O -c -Wall raw_mode.c
+
+neonate.o: neonate.c
+	gcc -O -c -Wall neonate.c
 
 find.o: find.c
 	gcc -O -c -Wall find.c

@@ -17,7 +17,7 @@
 #include "iman.h"
 #include "activities.h"
 #include "signal_handling.h"
-
+#include "neonate.h"
 
 /* Function to Tokenize the input based on semicolon*/
 void tokenizeInput(char* input, int writeHistory)
@@ -128,6 +128,10 @@ void processInput(char input[])
 
     else if(strcmp(command_string[0], "proclore")==0){
         proclore(command_string, n_arguments);
+    }
+
+    else if(strcmp(command_string[0], "neonate")==0){
+        neonate(command_string, n_arguments);
     }
 
     else if(strcmp(command_string[0], "ping")==0){

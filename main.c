@@ -63,25 +63,6 @@ int process_count;
 struct Process process_buffer[1000];
 char error_buffer[1024];
 
-// Function to print out the error message and exit with value 1
-void die(const char *s){
-    perror(s);
-    exit(1);
-}
-
-void disableRawMode(){
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1){
-        die("tcsetattr");
-    }
-}
-
-void enableRawMode(){
-    if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) die("tcgetattr");
-    atexit(disableRawMode);
-    orig_termios.c_lflag &= ~(ECHO | ICANON);
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
-}
-
 int get_username_syetemname_cwd()
 {
     userName = getlogin();
@@ -126,6 +107,7 @@ void repeat_loop(char* input, int* pt)
 {
     memset(input, '\0', MAX_INPUT_LENGTH);
     memset(history_string, '\0', MAX_INPUT_LENGTH);
+    memset(process_time, '\0', MAX_COMMAND_LENGTH);
     setbuf(stdout, NULL);
     restore_std(saved_STDOUT, saved_STDIN, saved_STDDERR);
     
@@ -152,7 +134,6 @@ int main(int argc, char* argv[]){
     saved_STDDERR = dup(STDERR_FILENO);
 
     ReadHistoryFromFile();
-    enableRawMode();
 
     if(get_username_syetemname_cwd()) {
         print_error("ERROR: Getting Username or SystemName\n");
@@ -167,15 +148,13 @@ int main(int argc, char* argv[]){
         printf("\033[1;0m<%s@%s:%s%s> ",userName, systemName, relative_dir, process_time);
         fflush(stdout);
         
-        memset(process_time, '\0', MAX_COMMAND_LENGTH);
         rawModeInput(c, input, pt);
         if(!strlen(input)) continue;
-        
+
         tokenizeInput(removeLeadingSpaces(input), 1);
         bg_process_finished();
     }
 
-    disableRawMode();
     free(input);
     deleteHistory();
     exit_shell();

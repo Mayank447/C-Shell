@@ -36,6 +36,7 @@ extern int saved_STDIN;
 extern int saved_STDOUT;
 extern int saved_STDDERR;
 
+extern struct termios orig_termios;
 extern int process_count;
 extern struct Process process_buffer[1000];
 extern char error_buffer[1024];

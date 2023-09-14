@@ -7,8 +7,29 @@
 #include "shell.h"
 #include "history.h"
 
-void rawModeInput(char c, char* inp, int pt)
-{
+// Function to print out the error message and exit with value 1
+void die(const char *s){
+    perror(s);
+    exit(1);
+}
+
+void disableRawMode(){
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1){
+        die("tcsetattr");
+    }
+}
+
+void enableRawMode(){
+    if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) die("tcgetattr");
+    atexit(disableRawMode);
+    struct termios raw = orig_termios;
+    raw.c_lflag &= ~(ECHO | ICANON);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
+
+void rawModeInput(char c, char* inp, int pt){
+    enableRawMode();
+
     int len=0;
     while (read(STDIN_FILENO, &c, 1) == 1) {
         if (iscntrl(c)) {
@@ -84,4 +105,5 @@ void rawModeInput(char c, char* inp, int pt)
             printf("%c", c);
         }
     }
+    disableRawMode();
 }

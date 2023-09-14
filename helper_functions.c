@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "shell.h"
 
@@ -85,4 +86,12 @@ void getCommandfromString(char* input, char* command){
         i++;
     }
     command[i] = '\0';
+}
+
+// write a function to check if a string is a number using strtol
+int isNumber(char* s){
+    char* endptr;
+    strtol(s, &endptr, 10);
+    if(*endptr=='\0') return 1;
+    return 0;
 }
