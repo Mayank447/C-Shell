@@ -37,7 +37,7 @@ void getProcessFiles(int pid){
     if(len!=-1) 
         exe_buffer[len] = '\0';
     else{
-        sprintf(error_buffer, "ERROR: %s\n", strerror(errno));
+        sprintf(error_buffer, "STAT_ERROR: %s\n", strerror(errno));
         print_error(error_buffer);
         return;
     }

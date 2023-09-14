@@ -13,9 +13,9 @@ void activities()
 {
     qsort(process_buffer, process_count, sizeof(struct Process), compareByPID);
     for(int i=0; i < process_count; i++){
-        if(strcmp(process_buffer[i].status, "Z")!=0) 
+        if(strcmp(process_buffer[i].status, "R")!=0) 
             printf("%d : %s - Running\n", process_buffer[i].pid, process_buffer[i].entire_command);
-        else
+        else if(strcmp(process_buffer[i].status, "S")!=0)
             printf("%d : %s - Stopped\n", process_buffer[i].pid, process_buffer[i].entire_command);
     }
 }

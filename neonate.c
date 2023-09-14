@@ -70,6 +70,7 @@ void neonate(char commands[][MAX_ARGUMENT_LENGTH], int arguments)
     else{
         char c;
         enableRawMode();
+        process_buffer[process_count-1].pid = pid;
         while(1){
             if((c=getchar())=='x' || c!=EOF) {
                 kill(pid, SIGKILL);

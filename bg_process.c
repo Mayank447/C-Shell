@@ -10,9 +10,18 @@
 
 #include "shell.h"
 
-void store_process(){
+void store_process_foreground(){
     // Storing the process in the process buffer
     process_buffer[process_count].already_exitted = 0;
+    process_buffer[process_count].bg = 0;
+    process_buffer[process_count].time_initialized = time(NULL);
+    strcpy(process_buffer[process_count].status, "R+");
+}
+
+void store_process_background(){
+    // Storing the process in the process buffer
+    process_buffer[process_count].already_exitted = 0;
+    process_buffer[process_count].bg = 1;
     process_buffer[process_count].time_initialized = time(NULL);
     strcpy(process_buffer[process_count].status, "R");
 }
@@ -40,18 +49,18 @@ void background_to_foreground(pid_t pid) {
 void bg_process_finished()
 {
     int status, result;
-    for(int i=0; i<process_count; i++)
-    {
-        result = waitpid(process_buffer[i].pid, &status, WNOHANG);
-        
-        //if(result<0) perror("Waitpid failed:");
+    for(int i=0; i<process_count; i++){
 
-        if(result==0) continue; //Currently running
+        result = waitpid(process_buffer[i].pid+1, &status, WNOHANG | WUNTRACED);
+        printf("%d %d\n", result, process_buffer[i].pid);
+
+        if(result==0) 
+            continue; //Currently running
         
-        else if(process_buffer[i].already_exitted==0)
+        else if(result==process_buffer[i].pid+1 && process_buffer[i].already_exitted==0)
         {
             process_buffer[i].already_exitted = 1;
-            strcpy(process_buffer[i].status, "Z");
+            strcpy(process_buffer[i].status, "T");
             
             if(process_buffer[i].bg==0) {
                 int time_taken = time(NULL) - process_buffer[i].time_initialized;
@@ -86,25 +95,27 @@ void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, i
     arguments[argument]=NULL;
 
     pid_t pid = fork();
-    process_buffer[process_count++].pid = pid;
     int status;
 
     // Child process
     if(pid<0) perror("Fork failed:");
     
     else if(pid==0){
+        signal(SIGINT, SIG_DFL); // Ctrl+C
+        signal(SIGTSTP, SIG_DFL); // Ctrl+Z
+        signal(SIGTTOU, SIG_DFL);
         execvp(command_string[0], arguments);
         perror("Invalid command:");
         exit(1);
     }
 
     else{
+        process_buffer[process_count++].pid = pid;
         if(is_background) {
-            process_buffer[process_count-1].bg = 1;
             printf("%d\n", pid);
         }
         else{
-            waitpid(pid, &status, 0);
+            waitpid(pid, &status, WUNTRACED);
         }
     }
 }

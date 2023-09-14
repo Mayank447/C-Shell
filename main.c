@@ -36,6 +36,7 @@ char* userName;
 struct utsname systemInfo;
 int SHELL_PID;
 char* process_time;
+char* shell_input;
 
 // Global Variables - > Directory handling
 char* home_directory;
@@ -94,20 +95,20 @@ void restore_std(int saved_stdout, int saved_stdin, int saved_stderr){
 
 
 void exit_shell(){
+    free(shell_input);
     free(userName);
-    free(systemName);
     free(home_directory);
     free(current_directory);
     free(previous_directory);
     free(relative_dir);
     free(history_string);
+    deleteHistory();
 }
 
 void repeat_loop(char* input, int* pt)
 {
     memset(input, '\0', MAX_INPUT_LENGTH);
     memset(history_string, '\0', MAX_INPUT_LENGTH);
-    memset(process_time, '\0', MAX_COMMAND_LENGTH);
     setbuf(stdout, NULL);
     restore_std(saved_STDOUT, saved_STDIN, saved_STDDERR);
     
@@ -139,24 +140,26 @@ int main(int argc, char* argv[]){
         print_error("ERROR: Getting Username or SystemName\n");
     }
 
-    char* input = (char*)malloc(sizeof(char) * MAX_INPUT_LENGTH);
+    char* shell_input = (char*)malloc(sizeof(char) * MAX_INPUT_LENGTH);
     char c = '\0';
     int pt = 0;
 
+    signal(SIGINT, SIG_IGN); // Ctrl+C
+    signal(SIGTSTP, SIG_IGN); // Ctrl+Z
+    signal(SIGTTOU, SIG_IGN); //Ensures background process doesn't output to the terminal
+
     while(1){
-        repeat_loop(input, &pt);
+        repeat_loop(shell_input, &pt);
         printf("\033[1;0m<%s@%s:%s%s> ",userName, systemName, relative_dir, process_time);
         fflush(stdout);
         
-        rawModeInput(c, input, pt);
-        if(!strlen(input)) continue;
-
-        tokenizeInput(removeLeadingSpaces(input), 1);
+        rawModeInput(c, shell_input, pt);
+        if(!strlen(shell_input)) continue;
+        memset(process_time, '\0', MAX_COMMAND_LENGTH);
+        tokenizeInput(removeLeadingSpaces(shell_input), 1);
         bg_process_finished();
     }
 
-    free(input);
-    deleteHistory();
     exit_shell();
     exit(0);
 }

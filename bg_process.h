@@ -15,6 +15,7 @@ struct Process{
 
 void execute_command(char command_string[][1000], int argument, int is_background);
 void bg_process_finished();
-void store_process();
+void store_process_foreground();
+void store_process_background();
 
 #endif

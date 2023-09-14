@@ -50,15 +50,12 @@ void pipeInputString(char* input){
             close(pipe_fds[1]); // Close the write end of the pipe
 
             processInput(Commands[i]); // Execute the command
-            exit(EXIT_SUCCESS);
         } 
         
         else {
-            store_process();
-            process_buffer[process_count].bg = 0;
+            store_process_foreground();
             strcpy(process_buffer[process_count].entire_command, Commands[i]);
             getCommandfromString(Commands[i], process_buffer[process_count].command);
-            process_buffer[process_count++].pid = pid;
 
             // Parent process
             close(pipe_fds[1]); // Close the write end of the pipe

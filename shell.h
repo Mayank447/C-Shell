@@ -26,6 +26,7 @@ extern int history_pointer;
 extern int history_size;
 extern int temp_history_pointer;
 extern char* history_string;
+extern char* shell_input;
 
 extern int MAX_COMMANDS;
 extern int MAX_COMMAND_LENGTH;

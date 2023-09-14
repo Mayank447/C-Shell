@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <termios.h>
+#include <signal.h>
 #include "shell.h"
 #include "history.h"
 
@@ -90,7 +91,14 @@ void rawModeInput(char c, char* inp, int pt){
                 }
             } 
 
-            else if (c == 4 || c==26) exit(0); // Ctrl+D (EOF)
+            else if (c == 4 || c==26) {
+                for(int i=0; i<process_count; i++){
+                    if(process_buffer[i].bg==1){
+                        kill(-process_buffer[i].pid, SIGKILL);
+                    }
+                }
+                exit(0); // Ctrl+D (EOF)
+            }
 
             //else if(c == 3)
 

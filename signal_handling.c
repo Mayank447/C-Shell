@@ -17,6 +17,7 @@ void signal_handler(char command_string[][MAX_ARGUMENT_LENGTH], int arguments)
 
     pid_t pid = atoi(command_string[1]);
     int signal_number = atoi(command_string[2]) % 32;
+    printf("%d %d\n", pid, signal_number);
     
     // Checking if the signal number is valid
     if (kill(pid, 0) == 0 || errno != ESRCH) {

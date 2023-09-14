@@ -63,7 +63,7 @@ void categorize_fg_bg_process(char input[])
         strcat(history_string, "& ");
 
         // Storing the background process in the process buffer
-        store_process();
+        store_process_background();
         process_buffer[process_count].bg = 1;
         strcpy(process_buffer[process_count].entire_command, Commands[i]);
 
@@ -105,11 +105,10 @@ void processInput(char input[])
     int n_arguments=1;
     char command_string[MAX_ARGUMENTS][MAX_ARGUMENT_LENGTH];
     characterParser(command_string, input_copy, &n_arguments, ' ');
-    deleteQuotes(command_string, n_arguments);
+    deleteQuotes_Slashes(command_string, n_arguments);
 
     if(strcmp(command_string[0], "exit")==0){
         WriteToHistory();
-        deleteHistory();
         exit_shell();
         exit(0); // Closing the shell if the user typed exit
     }
