@@ -43,7 +43,7 @@ char* current_directory;
 char* relative_dir;
 char* previous_directory;
 
-// Global history
+// Global vraibles for history
 char** history_buffer;
 int history_pointer;
 int history_size;
@@ -110,6 +110,7 @@ void restore_std(int saved_stdout, int saved_stdin, int saved_stderr){
     dup2(saved_stderr, STDERR_FILENO);
 }
 
+
 void exit_shell(){
     free(userName);
     free(systemName);
@@ -146,12 +147,13 @@ int main(int argc, char* argv[]){
     }
 
     char* input = (char*)malloc(sizeof(char) * MAX_INPUT_LENGTH);
-    char c='\0';
+    char c = '\0';
 
     while(1){
+        int pt = 0;
         setbuf(stdout, NULL);
         memset(input, '\0', MAX_INPUT_LENGTH);
-        int pt = 0;
+        memset(history_string, '\0', MAX_INPUT_LENGTH);
 
         restore_std(saved_STDOUT, saved_STDIN, saved_STDDERR);
         printf("\033[1;0m<%s@%s:%s%s> ",userName, systemName, relative_dir, process_time);
@@ -161,7 +163,7 @@ int main(int argc, char* argv[]){
         rawModeInput(c, input, pt);
         if(!strlen(input)) continue;
         
-        tokenizeInput(removeLeadingSpaces(input));
+        tokenizeInput(removeLeadingSpaces(input), 1);
         bg_process_finished();
     }
 

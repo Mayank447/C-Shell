@@ -18,54 +18,42 @@
 #include "activities.h"
 #include "signal_handling.h"
 
-void addForegroundCommandToHistory(char* command)
-{
-    if(strcmp(command, "pastevents")!=0 && strcmp(command, "pastevents purge")){
-        if(history_size && strcmp(command, history_buffer[history_pointer])) 
-            strcat(history_string, command);
-    }
-    else if(strcmp(command, "pastevents purge")==0){
-        purgeHistory();
-    }
-    // else if(strnstr(command, "pastevents execute")==0){
-    //     PrintHistory();
-    // }
-}
-
 
 /* Function to Tokenize the input based on semicolon*/
-void tokenizeInput(char* input)
+void tokenizeInput(char* input, int writeHistory)
 {
     char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
 
     int semicolon_count=1;
     int condition = (input[strlen(input)-1]==';') ? 1:0;
     characterParser(Commands, input, &semicolon_count, ';');
-    memset(history_string, '\0', MAX_INPUT_LENGTH);
-
-    for (int i=0; i<semicolon_count - condition; i++){
+    
+    for(int i=0; i<semicolon_count - condition; i++){
         categorize_fg_bg_process(lowercase(removeLeadingSpaces(Commands[i])));
-        if(semicolon_count > 1){
-            strcat(history_string, ";");
+        if(semicolon_count > 1 && ((i!=semicolon_count-condition-1) || condition)){
+            strcat(history_string, "; ");
         }
     }
-    if(condition) strcat(history_string, ";");
-    AddCommandToHistory(history_string);
-    WriteToHistory();
+
+    // Saving the command in history
+    if(strlen(history_string)!=0 && writeHistory){
+        if(AddCommandToHistory(history_string)) {
+            WriteToHistory(); //Only write if AddCommand to history was successful
+        }
+    }
 }
 
 
 void categorize_fg_bg_process(char input[])
 {
-    char Commands[MAX_ARGUMENTS][MAX_COMMAND_LENGTH];
     int ampercent_count=0, arguments=1;
+    char Commands[MAX_COMMANDS][MAX_COMMAND_LENGTH];
+    char command_string[MAX_ARGUMENTS][MAX_ARGUMENT_LENGTH];
     
     int condition = (input[strlen(input)-1]=='&') ? 0:1;
     characterParser(Commands, input, &ampercent_count, '&');
 
-    char command_string[MAX_ARGUMENTS][MAX_ARGUMENT_LENGTH];
     int i=0;
-
     for(; i < ampercent_count; i++)
     {
         // Writing to the history_string
@@ -84,13 +72,19 @@ void categorize_fg_bg_process(char input[])
         execute_command(command_string, arguments, 1);
     }
 
-    // If not a bg process
-    if(condition){
+    // Extracting command for foreground process
+    char temp[MAX_COMMAND_LENGTH];
+    getCommandfromString(Commands[i], temp);
+
+    if(condition){ // If not a bg process
         removeLeadingSpaces(Commands[i]);
-        //addForegroundCommandToHistory(Commands[i]);
-        WriteToHistory();
-        
-        pipeInputString(Commands[i]);
+        if(strcmp(temp, "pastevents")==0 || strcmp(temp, "exit")==0 || !strcmp(temp, "warp") || !strcmp(temp, "seek")) {
+            processInput(Commands[i]);
+        }
+        else{
+            strcat(history_string, Commands[i]);
+            pipeInputString(Commands[i]);
+        }
     }
 }
 
@@ -110,7 +104,7 @@ void processInput(char input[])
     deleteQuotes(command_string, n_arguments);
 
     if(strcmp(command_string[0], "exit")==0){
-        // WriteToHistory();
+        WriteToHistory();
         deleteHistory();
         exit(0); // Closing the shell if the user typed exit
     }
@@ -140,7 +134,7 @@ void processInput(char input[])
     }
 
     else if(strcmp(command_string[0], "pastevents")==0){
-        processPasteventInput(command_string, n_arguments, input);
+        processPasteventInput(command_string, n_arguments);
     }
 
     else if(strcmp(command_string[0], "iman")==0){

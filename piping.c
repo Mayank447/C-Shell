@@ -23,7 +23,7 @@ void pipeInputString(char* input){
 
     for (int i=0; i<num_commands; i++){
         removeLeadingSpaces(Commands[i]);
-        if(strcmp(Commands[i], "\0")==0) {
+        if(strlen(Commands[i])==0) {
             print_error("Invalid use of pipes\n");
             return;
         }

@@ -90,19 +90,23 @@ void WriteToHistory()
 
 
 // Fn. to add a command to history buffer
-void AddCommandToHistory(char* input)
+int AddCommandToHistory(char* input)
 {
-    if(history_size == MAX_HISTORY_SIZE){
+    if(history_size == 0){
+        history_buffer[history_pointer] = (char*)malloc(sizeof(char)*MAX_INPUT_LENGTH);
+        strcpy(history_buffer[history_pointer], input);
+        history_size=1;
+    }
+
+    else if(strcmp(input, history_buffer[history_pointer])==0){
+        return 0;
+    }
+
+    else if(history_size == MAX_HISTORY_SIZE){
         history_pointer = (history_pointer+1) % MAX_HISTORY_SIZE;
         free(history_buffer[history_pointer]);
         history_buffer[history_pointer] = (char*)malloc(sizeof(char)*MAX_INPUT_LENGTH);
         strcpy(history_buffer[history_pointer], input);
-    }
-
-    else if(history_size == 0){
-        history_buffer[history_pointer] = (char*)malloc(sizeof(char)*MAX_INPUT_LENGTH);
-        strcpy(history_buffer[history_pointer], input);
-        history_size=1;
     }
 
     else{
@@ -110,6 +114,8 @@ void AddCommandToHistory(char* input)
         strcpy(history_buffer[history_pointer], input);
         history_size++;
     }
+
+    return 1;
 }
 
 void deleteHistory(){
@@ -148,7 +154,7 @@ void PrintHistory(){
 }
 
 
-void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int arguments, char* input)
+void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int arguments)
 {
     if(arguments == 1){ // Print the history
         PrintHistory();
@@ -165,10 +171,9 @@ void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int argum
             print_error("ERROR: Invalid index\n");
             return;
         }
-        if(index!=1) AddCommandToHistory(input);
-        char* input = (char*)malloc(sizeof(char)*MAX_INPUT_LENGTH);
+        char input[MAX_INPUT_LENGTH];
         strcpy(input, history_buffer[(history_pointer-index+1) % MAX_HISTORY_SIZE]);
-        tokenizeInput(input);
+        tokenizeInput(input, 0);
     }
 
     else{
