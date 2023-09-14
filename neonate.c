@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
 
@@ -10,8 +11,26 @@
 #include "helper_functions.h"
 #include "raw_mode.h"
 
-void printPID(){
+#define BUFFER_LENGTH 1024
 
+void printPID(){
+    char path[100] = "/proc/loadavg";
+    int file = open(path, O_RDONLY);
+    if (file == -1){
+        sprintf(error_buffer, "Neonate Error: %s: %s\n", path, strerror(errno));
+        print_error(error_buffer);
+        return;
+    }
+
+    char buffer[BUFFER_LENGTH];
+    int bytes_read = read(file, buffer, BUFFER_LENGTH);
+    if(bytes_read == -1) perror("STAT_FILE ERROR:");
+    close(file);
+
+    pid_t pid;
+    char a[32], b[32], c[32], d[32];
+    sscanf(buffer, "%s %s %s %s %d", a, b, c, d, &pid);
+    printf("%d\n", pid);
 }
 
 void neonate(char commands[][MAX_ARGUMENT_LENGTH], int arguments)
@@ -42,8 +61,8 @@ void neonate(char commands[][MAX_ARGUMENT_LENGTH], int arguments)
     else if(pid==0){
         while(1) {
             sleep(time_step);
-            printf("Neonate\n");
-            //printPID();
+            // printf("Neonate\n");
+            printPID();
         }
         exit(0);
     }
