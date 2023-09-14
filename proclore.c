@@ -43,12 +43,14 @@ void getProcessFiles(int pid){
     }
 
     int stat_file = open(stat_path, O_RDONLY);
-    read(stat_file, stat_buffer, BUFFER_LENGTH);
     if (stat_file == -1){
         sprintf(error_buffer, "proclore: %s: %s\n", stat_path, strerror(errno));
         print_error(error_buffer);
         return;
     }
+    
+    int bytes_read = read(stat_file, stat_buffer, BUFFER_LENGTH);
+    if(bytes_read == -1) perror("STAT_FILE ERROR:");
     close(stat_file);
 
     pid_t ppid;                            //* pid of parent process
@@ -63,7 +65,8 @@ void getProcessFiles(int pid){
     sscanf(stat_buffer, "%d %s %c %d %d %d %d %d", &pid, buffer_stat, &state,
            &ppid, &pgrp, &session, &tty_nr, &tpgid);
 
-    char *relative_process_exec_path = relativePath(exe_path);
+    char relative_process_exec_path[MAX_PATH_LENGTH];
+    relativePath(exe_path, relative_process_exec_path);
 
     char process_state[3];
     process_state[0] = state;
@@ -77,12 +80,16 @@ void getProcessFiles(int pid){
     sprintf(process_statm_path, "/proc/%d/statm", pid);
     int fd_process_statm = open(process_statm_path, O_RDONLY); //* for virtual memory size
     if (fd_process_statm == -1){
-        fprintf(stderr, "proclore: %s: %s\n",
-                process_statm_path, strerror(errno));
+        sprintf(error_buffer, "proclore: %s: %s\n", process_statm_path, strerror(errno));
+        print_error(error_buffer);
         return;
     }
 
-    read(fd_process_statm, buffer_statm, BUFFER_LENGTH);
+    bytes_read = read(fd_process_statm, buffer_statm, BUFFER_LENGTH);
+    if(bytes_read==-1){
+        sprintf(error_buffer, "Error finding virtual memory size: %s", strerror(errno));
+        print_error(error_buffer);
+    }
     sscanf(buffer_statm, "%lu", &virtual_memory_size);
     close(fd_process_statm);
 
@@ -90,10 +97,9 @@ void getProcessFiles(int pid){
 }
 
 
-void proclore(char input[][MAX_ARGUMENT_LENGTH], int arguments)
-{
+void proclore(char input[][MAX_ARGUMENT_LENGTH], int arguments){
+    
     pid_t pid;
-
     if(arguments==1) 
         pid = getpid();
 
@@ -111,7 +117,7 @@ void proclore(char input[][MAX_ARGUMENT_LENGTH], int arguments)
             sprintf(error_buffer, "ERROR: process with PID %d does not exits\n", pid);
             print_error(error_buffer);
         }
-        else perror("ERROR");
+        else perror("ERROR: process id invalid");
         return;
     }
 

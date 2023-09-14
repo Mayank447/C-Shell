@@ -15,8 +15,8 @@
 #include "color.h"
 
 int compare_lexo(void* a, void* b){
-    struct lexoFileDir *file1 = (const struct lexoFileDir*)a;
-    struct lexoFileDir *file2 = (const struct lexoFileDir*)b;
+    struct lexoFileDir *file1 = (struct lexoFileDir*)a;
+    struct lexoFileDir *file2 = (struct lexoFileDir*)b;
     return strcmp(file1->filename, file2->filename);
 }
 
@@ -50,7 +50,7 @@ void l_flag_print(struct stat file_stat, char* print_string)
     print_permissions(file_stat.st_mode, print_string);
 
     //Hard links 
-    sprintf(print_string + strlen(print_string), "%d\t",file_stat.st_nlink); 
+    sprintf(print_string + strlen(print_string), "%ld\t",file_stat.st_nlink); 
 
     // User and Group name
     struct passwd *user_info = getpwuid(file_stat.st_uid); 
@@ -62,7 +62,7 @@ void l_flag_print(struct stat file_stat, char* print_string)
     strcat(print_string, "\t");
     
     // File size
-    sprintf(print_string + strlen(print_string), "%lld\t", file_stat.st_size);
+    sprintf(print_string + strlen(print_string), "%ld\t", file_stat.st_size);
 
     // Last modified time
     char time_buffer[100];
@@ -93,7 +93,8 @@ void listFiles_Directory(char input[][MAX_ARGUMENT_LENGTH], int arguments)
         }
 
         else{
-            fprintf(stderr, "\033[0;31mERROR: %s is not a valid option\n\033[0;0m", input[i]);
+            sprintf(error_buffer, "ERROR: %s is not a valid option\n", input[i]);
+            print_error(error_buffer);
             return;
         }
     }

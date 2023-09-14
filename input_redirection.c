@@ -56,7 +56,8 @@ void input_redirection(char* input){
 
             int fd = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
             if(dup2(fd, STDOUT_FILENO) < 0) {
-                fprintf(stderr, "\033[0;31mInvalid filename: %s\033[0;0m", file_name);
+                sprintf(error_buffer, "Invalid filename: %s\n", file_name);
+                print_error(error_buffer);
                 exit(1);
             }
             close(fd);
@@ -68,7 +69,8 @@ void input_redirection(char* input){
             extractFilename(input, file_name, i);
             int fd = open(file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
             if(dup2(fd, STDOUT_FILENO) < 0) {
-                fprintf(stderr, "\033[0;31mInvalid filename: %s\033[0;0m", file_name);
+                sprintf(error_buffer, "Invalid filename: %s\n", file_name);
+                print_error(error_buffer);
                 exit(1);
             }
             close(fd);

@@ -94,10 +94,11 @@ int get_username_syetemname_cwd()
     
     current_directory = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
     previous_directory = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
+    relative_dir = (char*)malloc(sizeof(char)*MAX_PATH_LENGTH);
 
     strcpy(current_directory, home_directory);
     strcpy(previous_directory, home_directory);
-    relative_dir = relativePath(current_directory);
+    relativePath(current_directory, relative_dir);
     
     process_time = (char*)malloc(sizeof(char) * MAX_COMMAND_LENGTH);
     process_time[0] = '\0';
@@ -119,6 +120,17 @@ void exit_shell(){
     free(previous_directory);
     free(relative_dir);
     free(history_string);
+}
+
+void repeat_loop(char* input, int* pt)
+{
+    memset(input, '\0', MAX_INPUT_LENGTH);
+    memset(history_string, '\0', MAX_INPUT_LENGTH);
+    setbuf(stdout, NULL);
+    restore_std(saved_STDOUT, saved_STDIN, saved_STDDERR);
+    
+    if(history_size) temp_history_pointer = (history_pointer + 1) % MAX_HISTORY_SIZE;
+    *pt = 0;
 }
 
 
@@ -148,18 +160,14 @@ int main(int argc, char* argv[]){
 
     char* input = (char*)malloc(sizeof(char) * MAX_INPUT_LENGTH);
     char c = '\0';
+    int pt = 0;
 
     while(1){
-        int pt = 0;
-        setbuf(stdout, NULL);
-        memset(input, '\0', MAX_INPUT_LENGTH);
-        memset(history_string, '\0', MAX_INPUT_LENGTH);
-
-        restore_std(saved_STDOUT, saved_STDIN, saved_STDDERR);
+        repeat_loop(input, &pt);
         printf("\033[1;0m<%s@%s:%s%s> ",userName, systemName, relative_dir, process_time);
         fflush(stdout);
         
-        process_time[0] = '\0';
+        memset(process_time, '\0', MAX_COMMAND_LENGTH);
         rawModeInput(c, input, pt);
         if(!strlen(input)) continue;
         

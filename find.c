@@ -43,7 +43,7 @@ void findFiles_DirectoryRecursively(char* file, char* basePath, int d_flag, int 
 
     // Unable to open directory stream
     if (!dir)
-        exit(EXIT_FAILURE);
+        return;
     
     while ((dp = readdir(dir)) != NULL)
     {
@@ -123,7 +123,7 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
     for (int i=1; i<arguments; i++){
         if(command_string[i][0]=='-' && strlen(command_string[i])!=1 && flag_end != i-1){
             print_error("Incorrect syntax!\n");
-            exit(EXIT_FAILURE);
+            return;
         }
         
         if(command_string[i][0]=='-' && strlen(command_string[i])!=1){
@@ -134,7 +134,7 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
                 else if(command_string[i][f]=='e') e_flag = 1;
                 else{
                     print_error("Invalid flag\n");
-                    exit(EXIT_FAILURE);
+                    return;
                 }
             }
             flag_end = i;
@@ -144,18 +144,18 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
     // Both d and f flags can't be on at the same time
     if(d_flag && f_flag){
         print_error("Invalid flags!\n");
-        exit(EXIT_FAILURE);
+        return;
     }
 
     // Error handling for arguments
     if(arguments > flag_end + 3){
         print_error("Too many arguments sepcified\n");
-        exit(EXIT_FAILURE);
+        return;
     }
 
     else if(flag_end + 1 == arguments){
         print_error("No arguments specified\n");
-        exit(EXIT_FAILURE);
+        return;
     }
 
     char* dir =  "."; char* temp=NULL;
@@ -188,10 +188,12 @@ void find(char command_string[][MAX_ARGUMENT_LENGTH], int arguments){
     {
         if(COUNT==1 && PREVIOUS_TYPE==DT_DIR) {
             int err = chdir(PREVIOUS_FOUND);
-            if (err == -1) fprintf(stderr, "\033[0;31mseek : -e : %s\n\033[0;0m", strerror(errno));
-
+            if (err == -1) {
+                sprintf(error_buffer, "seek : -e : %s\n", strerror(errno));
+                print_error(error_buffer);
+            }
             current_directory = getcwd(current_directory, MAX_PATH_LENGTH);
-            relative_dir = relativePath(current_directory);
+            relativePath(current_directory, relative_dir);
         }
         
         else if(COUNT>1 && PREVIOUS_TYPE==DT_DIR) PrintDirectory(PREVIOUS_FOUND);

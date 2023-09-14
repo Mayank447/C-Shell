@@ -78,7 +78,11 @@ void categorize_fg_bg_process(char input[])
 
     if(condition){ // If not a bg process
         removeLeadingSpaces(Commands[i]);
-        if(strcmp(temp, "pastevents")==0 || strcmp(temp, "exit")==0 || !strcmp(temp, "warp") || !strcmp(temp, "seek")) {
+        if(strcmp(temp, "pastevents")==0 || strcmp(temp, "exit")==0) {
+            processInput(Commands[i]);
+        }
+        else if(!strcmp(temp, "warp") || !strcmp(temp, "seek")){
+            strcat(history_string, Commands[i]);
             processInput(Commands[i]);
         }
         else{
@@ -106,6 +110,7 @@ void processInput(char input[])
     if(strcmp(command_string[0], "exit")==0){
         WriteToHistory();
         deleteHistory();
+        exit_shell();
         exit(0); // Closing the shell if the user typed exit
     }
 

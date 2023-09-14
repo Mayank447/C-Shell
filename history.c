@@ -61,7 +61,8 @@ void ReadHistoryFromFile()
         i+=1;
     }
     history_size = i;
-    if(history_size) temp_history_pointer = (history_pointer + 1) % MAX_HISTORY_SIZE;
+    if(history_size) 
+        temp_history_pointer = (history_pointer + 1) % MAX_HISTORY_SIZE;
     fclose(fp);
 }
 
@@ -182,8 +183,10 @@ void processPasteventInput(char command_string[][MAX_ARGUMENT_LENGTH], int argum
 }
 
 void previousCommand(char* input, int* pt){
-    if(history_size==0)
+    if(history_size==0){
+        printf(" ");
         return;
+    }
     else if(temp_history_pointer!=0) 
         temp_history_pointer = (temp_history_pointer-1) % MAX_HISTORY_SIZE;
     else 
@@ -195,8 +198,10 @@ void previousCommand(char* input, int* pt){
 }
 
 void nextCommand(char* input, int* pt){
-    if(history_size==0) 
+    if(history_size==0 || (temp_history_pointer >= history_size && history_size!=MAX_HISTORY_SIZE)){ 
+        printf(" ");
         return;
+    }
     else if(temp_history_pointer == history_size-1) 
         temp_history_pointer = 0;
     else 
