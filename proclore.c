@@ -8,12 +8,13 @@
 
 #include "shell.h"
 #include "path_handling.h"
+#include "color.h"
 
-#define ERROR_BUFFER 1024
-#define BUFFER_LENGTH 10000
+#define BUFFER_LENGTH 4096
 
 void print_proclore(pid_t pid, char* process_status, pid_t group_pid,
-                    unsigned long int virtual_memory_size, char* relative_exec_path){
+                    unsigned long int virtual_memory_size, char* relative_exec_path)
+{
     // Printing the job details in the required format
     printf("pid : %d\n", pid);
     printf("Process Status : %s\n", process_status);
@@ -22,29 +23,33 @@ void print_proclore(pid_t pid, char* process_status, pid_t group_pid,
     printf("Executable Path : %s\n", relative_exec_path);
 }
 
+
 void getProcessFiles(int pid){
     char stat_path[100];
-    char exe_path[BUFFER_LENGTH];
+    char exe_path[100];
+    char stat_buffer[BUFFER_LENGTH];
     char exe_buffer[BUFFER_LENGTH];
 
     sprintf(stat_path, "/proc/%d/stat", pid);
     sprintf(exe_path, "/proc/%d/exe", pid);
 
     ssize_t len = readlink(exe_path, exe_buffer, sizeof(exe_buffer)-1);
-    if(len!=-1) exe_buffer[len] = '\0';
+    if(len!=-1) 
+        exe_buffer[len] = '\0';
     else{
-        fprintf(stderr, "ERROR: %s", strerror(errno));
+        sprintf(error_buffer, "ERROR: %s\n", strerror(errno));
+        print_error(error_buffer);
         return;
     }
 
-    char stat_buffer[BUFFER_LENGTH];
     int stat_file = open(stat_path, O_RDONLY);
     read(stat_file, stat_buffer, BUFFER_LENGTH);
     if (stat_file == -1){
-        fprintf(stderr, "proclore: %s: %s\n",
-                stat_path, strerror(errno));
+        sprintf(error_buffer, "proclore: %s: %s\n", stat_path, strerror(errno));
+        print_error(error_buffer);
         return;
     }
+    close(stat_file);
 
     pid_t ppid;                            //* pid of parent process
     pid_t pgrp;                            //* process group id of process
@@ -58,15 +63,13 @@ void getProcessFiles(int pid){
     sscanf(stat_buffer, "%d %s %c %d %d %d %d %d", &pid, buffer_stat, &state,
            &ppid, &pgrp, &session, &tty_nr, &tpgid);
 
+    char *relative_process_exec_path = relativePath(exe_path);
+
     char process_state[3];
     process_state[0] = state;
     process_state[1] = '\0';
-    if (pid == tpgid){
-        strcat(process_state, "+\0");
-    }
+    if (pid == tpgid) strcat(process_state, "+\0");
 
-    close(stat_file);
-    char *relative_process_exec_path = relativePath(exe_path);
 
     // Virtual memory
     char process_statm_path[BUFFER_LENGTH];
@@ -86,27 +89,29 @@ void getProcessFiles(int pid){
     print_proclore(pid, process_state, pgrp, virtual_memory_size, relative_process_exec_path);
 }
 
+
 void proclore(char input[][MAX_ARGUMENT_LENGTH], int arguments)
 {
     pid_t pid;
 
-    if(arguments==1) pid = getpid();
-    else if(arguments ==2) pid = atoi(input[1]);
+    if(arguments==1) 
+        pid = getpid();
+
+    else if(arguments ==2) 
+        pid = atoi(input[1]);
+
     else {
-        custom_error("Too many argunents");
+        print_error("Too many argunents\n");
         return;
     }
 
     int exists = kill(pid, 0);
     if(exists!=0){
         if(errno == ESRCH){
-            char error_string[ERROR_BUFFER];
-            sprintf(error_string, "ERROR: process with PID %d does not exits\n", pid);
-            custom_error(error_string);
+            sprintf(error_buffer, "ERROR: process with PID %d does not exits\n", pid);
+            print_error(error_buffer);
         }
-        else{
-            perror("ERROR");
-        }
+        else perror("ERROR");
         return;
     }
 

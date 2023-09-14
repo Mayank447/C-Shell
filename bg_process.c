@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <time.h>
+#include <termios.h>
 
 #include "shell.h"
 
@@ -15,6 +16,25 @@ void store_process(){
     process_buffer[process_count].time_initialized = time(NULL);
     strcpy(process_buffer[process_count].status, "R");
 }
+
+void bring_to_foreground(pid_t pid) {
+    if (tcsetpgrp(STDIN_FILENO, pid) == -1) {
+        perror("tcsetpgrp");
+        exit(1);
+    }
+}
+
+void background_to_foreground(pid_t pid) {
+    if (tcsetpgrp(STDIN_FILENO, pid) == -1) {
+        perror("tcsetpgrp");
+        exit(1);
+    }
+    if (kill(pid, SIGCONT) == -1) {
+        perror("kill");
+        exit(1);
+    }
+}
+
 
 
 void bg_process_finished()

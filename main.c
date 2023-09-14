@@ -61,6 +61,7 @@ struct termios orig_termios;
 //Processes
 int process_count;
 struct Process process_buffer[1000];
+char error_buffer[1024];
 
 // Function to print out the error message and exit with value 1
 void die(const char *s){
@@ -107,12 +108,6 @@ void restore_std(int saved_stdout, int saved_stdin, int saved_stderr){
     dup2(saved_stdout, STDOUT_FILENO);
     dup2(saved_stdin, STDIN_FILENO);
     dup2(saved_stderr, STDERR_FILENO);
-}
-
-// Function to print custom error
-void custom_error(const char *s){
-    fprintf(stderr, "%s", s);
-    fprintf(stderr, "\n");
 }
 
 void exit_shell(){

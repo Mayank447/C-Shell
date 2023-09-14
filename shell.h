@@ -38,6 +38,7 @@ extern int saved_STDDERR;
 
 extern int process_count;
 extern struct Process process_buffer[1000];
+extern char error_buffer[1024];
 
 void custom_error(const char* error);
 void die(const char *s);
