@@ -7,12 +7,15 @@
 #include <signal.h>
 #include <time.h>
 #include <termios.h>
+#include <errno.h>
 
 #include "shell.h"
+#include "color.h"
 
 void store_process_background(){
     // Storing the process in the process buffer
     process_buffer[process_count].already_exitted = 0;
+    process_buffer[process_count].bg = 1;
     process_buffer[process_count].time_initialized = time(NULL);
     strcpy(process_buffer[process_count].status, "R");
 }
@@ -34,21 +37,83 @@ void setStatus(int status, int i){
     }   
 }
 
-void bring_to_foreground(pid_t pid) {
-    if (tcsetpgrp(STDIN_FILENO, pid) == -1) {
+void bring_to_foreground(char command_string[][MAX_ARGUMENT_LENGTH], int arguments) {
+    if(arguments != 2) {
+        print_error("Invalid number of arguments\n");
+        return;
+    }
+
+    int pid = atoi(command_string[1]);
+    if (kill(pid, 0) == -1) {
+        print_error("No such process found\n");
+        return;
+    }
+
+    setpgid(pid, getpgid(0));
+    signal(SIGTTIN, SIG_IGN);
+    signal(SIGTTOU, SIG_IGN);
+
+    if(tcsetpgrp(0, pid) == -1) {
         perror("tcsetpgrp");
-        exit(1);
+        return;
+    }
+
+    if(kill(pid, SIGCONT)){
+        if(errno==ESRCH) {
+            print_error("fg : No such process found\n");
+        }
+        else {
+            print_error("fg : Could not send SIGCONT\n");
+        }
+        return;
+    }
+
+    if (tcsetpgrp(0, pid) == -1) {
+        perror("tcsetpgrp");
+        return;
+    }
+
+    // Waiting for the target process to finish (or be paused)
+    int status;
+    waitpid(pid, &status, WUNTRACED);
+
+    // Restore the original foreground process group
+    tcsetpgrp(0, getpgid(0));
+    signal(SIGTTIN, SIG_DFL);
+    signal(SIGTTOU, SIG_DFL);
+
+    for(int i=0; i<process_count; i++){
+        if(process_buffer[i].pid == pid){
+            strcpy(process_buffer[i].status, "R");
+            process_buffer[i].bg = 0;
+            process_buffer[i].already_exitted = 1;
+            break;
+        }
     }
 }
 
-void background_to_foreground(pid_t pid) {
-    if (tcsetpgrp(STDIN_FILENO, pid) == -1) {
-        perror("tcsetpgrp");
-        exit(1);
+void bg_command(char command_string[][MAX_ARGUMENT_LENGTH], int arguments) {
+    if(arguments != 2) {
+        print_error("Invalid number of arguments\n");
+        return;
     }
+
+    int pid = atoi(command_string[1]);
+    if (kill(pid, 0) == -1) {
+        print_error("No such process found\n");
+        return;
+    }
+
     if (kill(pid, SIGCONT) == -1) {
         perror("kill");
-        exit(1);
+        exit(EXIT_FAILURE);
+    }
+
+    for(int i=0; i<process_count; i++){
+        if(process_buffer[i].pid == pid){
+            strcpy(process_buffer[i].status, "R");
+            break;
+        }
     }
 }
 
@@ -57,7 +122,7 @@ void process_finished(){
     int status, result;
     for(int i=0; i<process_count; i++){
 
-        if(process_buffer[i].already_exitted==0) {
+        if(process_buffer[i].already_exitted==0 && process_buffer[i].bg==1) {
             result = waitpid(process_buffer[i].pid, &status, WNOHANG | WUNTRACED);         
             if(result < 1) continue;
             
@@ -84,6 +149,7 @@ void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, i
     if(pid<0) perror("Fork failed:");
     
     else if(pid==0){
+        if(is_background) setpgid(0, 0);
         signal(SIGINT, SIG_DFL); // Ctrl+C
         signal(SIGTSTP, SIG_DFL); // Ctrl+Z
         signal(SIGTTOU, SIG_DFL);

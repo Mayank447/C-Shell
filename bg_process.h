@@ -13,8 +13,10 @@ struct Process{
   time_t time_initialized;
 };
 
-void execute_command(char command_string[][1000], int argument, int is_background);
-void process_finished();
 void store_process_background();
+void process_finished();
+void execute_command(char command_string[][1000], int argument, int is_background);
+void bring_to_foreground(char command_string[][1000], int arguments);
+void bg_command(char command_string[][1000], int arguments);
 
 #endif

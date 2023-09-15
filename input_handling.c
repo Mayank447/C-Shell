@@ -81,7 +81,7 @@ void categorize_fg_bg_process(char input[])
         if(strcmp(temp, "pastevents")==0 || strcmp(temp, "exit")==0) {
             processInput(Commands[i]);
         }
-        else if(!strcmp(temp, "warp") || !strcmp(temp, "seek")){
+        else if(!strcmp(temp, "warp") || !strcmp(temp, "seek") || !strcmp(temp, "fg")){
             strcat(history_string, Commands[i]);
             processInput(Commands[i]);
         }
@@ -135,6 +135,10 @@ void processInput(char input[])
 
     else if(strcmp(command_string[0], "ping")==0){
         signal_handler(command_string, n_arguments);
+    }
+
+    else if(strcmp(command_string[0], "bg")==0){
+        bg_command(command_string, n_arguments);
     }
 
     else if(strcmp(command_string[0], "seek")==0){

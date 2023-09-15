@@ -22,7 +22,7 @@ void signal_handler(char command_string[][MAX_ARGUMENT_LENGTH], int arguments)
     // Checking if the signal number is valid
     if (kill(pid, 0) == 0 || errno != ESRCH) {
         if (kill(pid, signal_number) == 0) {
-            printf("Sent signal %d to process with pid%d.\n", signal_number, pid);
+            printf("Sent signal %d to process with pid %d.\n", signal_number, pid);
         } 
         else {
             perror("Error sending signal:");
