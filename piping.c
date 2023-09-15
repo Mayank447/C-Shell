@@ -36,10 +36,11 @@ void pipeInputString(char* input){
             return;
         }
         pid = fork();
+        int initial_time = time(NULL);
 
         if (pid == -1) {
             perror("fork");
-            exit(EXIT_FAILURE);
+            return;
         } 
         
         else if (pid == 0) {
@@ -53,15 +54,23 @@ void pipeInputString(char* input){
             close(pipe_fds[1]); // Close the write end of the pipe
 
             processInput(Commands[i]); // Execute the command
+            exit(EXIT_SUCCESS);
         } 
         
         else {
-            
             // Parent process
             close(pipe_fds[1]); // Close the write end of the pipe
             waitpid(pid, &status, 0);
             // Set the input for the next command to be the read end of the pipe
             input_fd = pipe_fds[0];
+
+            char command[MAX_COMMAND_LENGTH];
+            getCommandfromString(Commands[i], command);
+
+            int time_taken = time(NULL) - initial_time;
+            if(time_taken > 2){
+                sprintf(process_time, ":%s : %d", command, time_taken);
+            }
         }
     }
 

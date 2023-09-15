@@ -151,15 +151,15 @@ int main(int argc, char* argv[]){
     while(1){
         repeat_loop(shell_input, &pt);
         printf("\033[1;0m<%s@%s:%s%s> ",userName, systemName, relative_dir, process_time);
-        fflush(stdout);
         
         rawModeInput(c, shell_input, pt);
         if(!strlen(shell_input)) continue;
         memset(process_time, '\0', MAX_COMMAND_LENGTH);
+        
         tokenizeInput(removeLeadingSpaces(shell_input), 1);
         process_finished();
     }
-
+    
     exit_shell();
     exit(0);
 }

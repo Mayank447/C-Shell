@@ -79,15 +79,14 @@ void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, i
 
     pid_t pid = fork();
     int status;
-    int initial_time = time(NULL);
 
     // Child process
     if(pid<0) perror("Fork failed:");
     
     else if(pid==0){
-        // signal(SIGINT, SIG_DFL); // Ctrl+C
-        // signal(SIGTSTP, SIG_DFL); // Ctrl+Z
-        // signal(SIGTTOU, SIG_DFL);
+        signal(SIGINT, SIG_DFL); // Ctrl+C
+        signal(SIGTSTP, SIG_DFL); // Ctrl+Z
+        signal(SIGTTOU, SIG_DFL);
         execvp(command_string[0], arguments);
         perror("Invalid command:");
         exit(1);
@@ -100,11 +99,6 @@ void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, i
         }
         else{
             waitpid(pid, &status, WUNTRACED);
-    
-            int time_taken = time(NULL) - initial_time;
-            if(time_taken > 2){
-                sprintf(process_time, ":%s : %d", command_string[0], time_taken);
-            }
         }
     }
 }

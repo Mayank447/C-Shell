@@ -43,6 +43,5 @@ extern struct Process process_buffer[1000];
 extern char error_buffer[1024];
 
 void exit_shell();
-void die(const char *s);
 
 #endif

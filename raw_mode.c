@@ -29,9 +29,9 @@ void enableRawMode(){
 }
 
 void rawModeInput(char c, char* inp, int pt){
+    int len=0;
     enableRawMode();
 
-    int len=0;
     while (read(STDIN_FILENO, &c, 1) == 1) {
         if (iscntrl(c)) {
             if (c == 10) {
@@ -92,11 +92,12 @@ void rawModeInput(char c, char* inp, int pt){
             } 
 
             else if (c == 4 || c==26) { // Ctrl+D (EOF)
-                // for(int i=0; i<process_count; i++){
-                //     if(!process_buffer[i].already_exitted){
-                //         kill(-process_buffer[i].pid, SIGKILL);
-                //     }
-                // }
+                for(int i=0; i<process_count; i++){
+                    if(!process_buffer[i].already_exitted){
+                        kill(-process_buffer[i].pid, SIGKILL);
+                    }
+                }
+                disableRawMode();
                 exit(0); 
             }
 
