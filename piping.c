@@ -31,7 +31,10 @@ void pipeInputString(char* input){
 
     for (int i=0; i<num_commands; i++)
     {
-        pipe(pipe_fds);
+        if(pipe(pipe_fds)==-1){
+            perror("Pipe error : ");
+            return;
+        }
         pid = fork();
 
         if (pid == -1) {
@@ -53,10 +56,7 @@ void pipeInputString(char* input){
         } 
         
         else {
-            store_process_foreground();
-            strcpy(process_buffer[process_count].entire_command, Commands[i]);
-            getCommandfromString(Commands[i], process_buffer[process_count].command);
-
+            
             // Parent process
             close(pipe_fds[1]); // Close the write end of the pipe
             waitpid(pid, &status, 0);

@@ -157,7 +157,7 @@ int main(int argc, char* argv[]){
         if(!strlen(shell_input)) continue;
         memset(process_time, '\0', MAX_COMMAND_LENGTH);
         tokenizeInput(removeLeadingSpaces(shell_input), 1);
-        bg_process_finished();
+        process_finished();
     }
 
     exit_shell();

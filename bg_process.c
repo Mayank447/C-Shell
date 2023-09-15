@@ -10,20 +10,28 @@
 
 #include "shell.h"
 
-void store_process_foreground(){
-    // Storing the process in the process buffer
-    process_buffer[process_count].already_exitted = 0;
-    process_buffer[process_count].bg = 0;
-    process_buffer[process_count].time_initialized = time(NULL);
-    strcpy(process_buffer[process_count].status, "R+");
-}
-
 void store_process_background(){
     // Storing the process in the process buffer
     process_buffer[process_count].already_exitted = 0;
-    process_buffer[process_count].bg = 1;
     process_buffer[process_count].time_initialized = time(NULL);
     strcpy(process_buffer[process_count].status, "R");
+}
+
+void setStatus(int status, int i){
+    if(WIFEXITED(status)) {
+        strcpy(process_buffer[i].status, "T");
+        printf("%s exited normally (%d)\n", process_buffer[i].command, process_buffer[i].pid);
+    }
+
+    else if(WIFSIGNALED(status)){
+        strcpy(process_buffer[i].status, "S");
+        printf("%s with PID (%d) was terminated by a signal (%d)\n", process_buffer[i].command, process_buffer[i].pid, WTERMSIG(status));
+    }
+            
+    else {
+        strcpy(process_buffer[i].status, "T");
+        printf("%s exited abnormally (%d)\n", process_buffer[i].command, process_buffer[i].pid);
+    }   
 }
 
 void bring_to_foreground(pid_t pid) {
@@ -45,41 +53,16 @@ void background_to_foreground(pid_t pid) {
 }
 
 
-
-void bg_process_finished()
-{
+void process_finished(){
     int status, result;
     for(int i=0; i<process_count; i++){
 
-        result = waitpid(process_buffer[i].pid+1, &status, WNOHANG | WUNTRACED);
-        printf("%d %d\n", result, process_buffer[i].pid);
-
-        if(result==0) 
-            continue; //Currently running
-        
-        else if(result==process_buffer[i].pid+1 && process_buffer[i].already_exitted==0)
-        {
+        if(process_buffer[i].already_exitted==0) {
+            result = waitpid(process_buffer[i].pid, &status, WNOHANG | WUNTRACED);         
+            if(result < 1) continue;
+            
             process_buffer[i].already_exitted = 1;
-            strcpy(process_buffer[i].status, "T");
-            
-            if(process_buffer[i].bg==0) {
-                int time_taken = time(NULL) - process_buffer[i].time_initialized;
-                if(time_taken > 2){
-                    sprintf(process_time, ":%s : %d", process_buffer[i].command, time_taken);
-                }
-            }
-
-            else if(process_buffer[i].bg==1)
-            {   
-                if(WIFEXITED(status)) 
-                    printf("%s exited normally (%d)\n", process_buffer[i].command, process_buffer[i].pid);
-
-                else if(WIFSIGNALED(status))
-                    printf("%s with PID (%d) was terminated by a signal (%d)\n", process_buffer[i].command, process_buffer[i].pid, WTERMSIG(status));
-            
-                else
-                    printf("%s exited abnormally (%d)\n", process_buffer[i].command, process_buffer[i].pid);
-            }
+            setStatus(status, i);
         }
     }
 }
@@ -96,26 +79,32 @@ void execute_command(char command_string[][MAX_ARGUMENT_LENGTH], int argument, i
 
     pid_t pid = fork();
     int status;
+    int initial_time = time(NULL);
 
     // Child process
     if(pid<0) perror("Fork failed:");
     
     else if(pid==0){
-        signal(SIGINT, SIG_DFL); // Ctrl+C
-        signal(SIGTSTP, SIG_DFL); // Ctrl+Z
-        signal(SIGTTOU, SIG_DFL);
+        // signal(SIGINT, SIG_DFL); // Ctrl+C
+        // signal(SIGTSTP, SIG_DFL); // Ctrl+Z
+        // signal(SIGTTOU, SIG_DFL);
         execvp(command_string[0], arguments);
         perror("Invalid command:");
         exit(1);
     }
 
     else{
-        process_buffer[process_count++].pid = pid;
         if(is_background) {
+            process_buffer[process_count++].pid = pid;
             printf("%d\n", pid);
         }
         else{
             waitpid(pid, &status, WUNTRACED);
+    
+            int time_taken = time(NULL) - initial_time;
+            if(time_taken > 2){
+                sprintf(process_time, ":%s : %d", command_string[0], time_taken);
+            }
         }
     }
 }

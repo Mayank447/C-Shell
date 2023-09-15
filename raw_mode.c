@@ -91,13 +91,13 @@ void rawModeInput(char c, char* inp, int pt){
                 }
             } 
 
-            else if (c == 4 || c==26) {
-                for(int i=0; i<process_count; i++){
-                    if(process_buffer[i].bg==1){
-                        kill(-process_buffer[i].pid, SIGKILL);
-                    }
-                }
-                exit(0); // Ctrl+D (EOF)
+            else if (c == 4 || c==26) { // Ctrl+D (EOF)
+                // for(int i=0; i<process_count; i++){
+                //     if(!process_buffer[i].already_exitted){
+                //         kill(-process_buffer[i].pid, SIGKILL);
+                //     }
+                // }
+                exit(0); 
             }
 
             //else if(c == 3)
