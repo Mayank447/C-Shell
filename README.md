@@ -2,7 +2,7 @@
   C-Shell
 </h1>
 
-<h4 align="center">Custom Shell based on bash semantics written in C</h4>
+<h4 align="center">A Custom Shell written in C based on bash semantics </h4>
 
 ### Building and running
 
@@ -12,6 +12,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 - `src` folder contains all the source code of the project which are mainly `.c` files. Each `.c` file implements a functionality/command e.g. `bg` command
 - `include` folder contains all the header files associated with the format `.h`.
+- `/include/libs.h` is the main header file which imports all the other custom header files.
 
 <pre>
 .
@@ -25,6 +26,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 │   ├── input_handling.h
 │   ├── input_redirection.h
 │   ├── neonate.h
+│   ├── params.h
 │   ├── pastevents.h
 │   ├── path_handling.h
 │   ├── peek.h
@@ -56,21 +58,35 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
     ├── signal.c
 </pre>
 
-## List of assumptions-
+## Usage:
 
-* Reasonable assumptions have been made for the maximum length of commands, filenames etc. The lengths for the same can be found out in the main.c file
-* Precedence order followed - \\"' ;  & | << < > other characters, strings. Any symbol after \ is ignore similar to bash.
-* Multiple random spaces and tab spaces have been handled.
-* The input string is converted into lowercase beforehand.
-* Up and down arrows can be used to scroll through the command history similar to bash.
-* The history is stored in .CShell_history file.
-* cd command won't execute. Instead use warp to change directories. If the shell has just started, warp - won't change any directory.
-* .. . ~ - can be used for referencing directories similar to bash.
+- Precedence order followed `\ " ' ;  & | << < >` in decreasing order. Any symbol after \ is ignore similar to bash.
 
-### Usage
+- `;` and `&` can be used to chain commands. `;` runs the previous command in foreground. `&` runs the previous command in background.
 
-The working directory of the shell is the directory where it was executed from.
-Commands can be chained with `;` or `&`. `;` runs the previous command in foreground. `&` runs the previous command in background.
+- Pipe symbol `|` can be used for piping commands similar to bash.
+
+- Input-output redirection can be performed using `>`, `>>` and `<` similar to Bash.
+
+- `.. . ~ -` can be used for referencing directories similar to bash.
+
+- &#8593; and &#8595; arrows can be used to scroll through the command history similar to bash.
+
+
+## Assumptions:
+
+- Multiple spaces and tab spaces are ignored.
+
+- Commands, files, folders are case-insensitive.
+
+- The history is stored in a hidden file `.CShell_history`.
+
+- `cd` command won't chnage directories because of forking. Instead use `warp` command to change directories.
+
+- If the shell has just started, `warp` - won't change any directory.
+
+- Reasonable assumptions have been made for the maximum length of commands, filenames, history etc. The lengths for the same can be found out in the `main.c` file.
+
 
 ### Compatibility
 
