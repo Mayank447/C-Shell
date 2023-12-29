@@ -4,12 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
-#include "../include/shell.h"
-#include "../include/input_handling.h"
-#include "../include/helper_functions.h"
-#include "../include/color.h"
-#include "../include/bg_process.h"
+#include "../include/libs.h"
 
 void pipeInputString(char* input){
     int pipe_fds[2];

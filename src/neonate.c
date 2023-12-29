@@ -5,11 +5,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
-
-#include "../include/shell.h"
-#include "../include/color.h"
-#include "../include/helper_functions.h"
-#include "../include/raw_mode.h"
+#include "../include/libs.h"
 
 #define BUFFER_LENGTH 1024
 

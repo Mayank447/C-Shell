@@ -6,9 +6,7 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
-#include "../include/shell.h"
-#include "../include/color.h"
+#include "../include/libs.h"
 
 void handle_error(char* error){
     print_error(error);

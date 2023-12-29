@@ -3,12 +3,8 @@
 #include <string.h>
 #include <dirent.h>
 #include <unistd.h>
-
 #include "errno.h"
-#include "../include/shell.h"
-#include "../include/path_handling.h"
-#include "../include/color.h"
-#include "../include/path_handling.h"
+#include "../include/libs.h"
 
 int COUNT;
 char* PREVIOUS_FOUND;

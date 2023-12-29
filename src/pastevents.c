@@ -2,10 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "../include/shell.h"
-#include "../include/input_handling.h"
-#include "../include/color.h"
+#include "../include/libs.h"
 
 // Fn. to read history from file to history buffer
 void ReadHistoryFromFile()

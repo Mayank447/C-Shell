@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "../include/shell.h"
-#include "../include/color.h"
+#include "../include/libs.h"
 
 //TO DO: Put relative path in the while loop
 

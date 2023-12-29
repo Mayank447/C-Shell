@@ -1,5 +1,5 @@
-#ifndef HISTORY_H
-#define HISTORY_H
+#ifndef PASTEVENTS_H
+#define PASTEVENTS_H
 
 void ReadHistoryFromFile();
 void processPasteventInput(char command_string[][1000], int arguments);

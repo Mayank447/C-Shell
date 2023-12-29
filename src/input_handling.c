@@ -2,22 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "../include/shell.h"
-#include "../include/history.h"
-#include "../include/input_redirection.h"
-#include "../include/input_handling.h"
-#include "../include/helper_functions.h"
-#include "../include/piping.h"
-#include "../include/bg_process.h"
-#include "../include/proclore.h"
-#include "../include/ls.h"
-#include "../include/path_handling.h"
-#include "../include/find.h"
-#include "../include/iman.h"
-#include "../include/activities.h"
-#include "../include/signal_handling.h"
-#include "../include/neonate.h"
+#include "../include/libs.h"
 
 /* Function to Tokenize the input based on semicolon*/
 void tokenizeInput(char* input, int writeHistory)

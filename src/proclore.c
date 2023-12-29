@@ -5,10 +5,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <fcntl.h>
-
-#include "../include/shell.h"
-#include "../include/path_handling.h"
-#include "../include/color.h"
+#include "../include/libs.h"
 
 #define BUFFER_LENGTH 4096
 

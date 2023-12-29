@@ -2,7 +2,7 @@
   C-Shell
 </h1>
 
-<h4 align="center">Shell written from scratch in C following bash semantics</h4>
+<h4 align="center">Custom Shell based on bash semantics written in C</h4>
 
 ### Building and running
 
@@ -10,26 +10,23 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 ### Navigating the directory structure
 
-- `src` folder contains all the source code of the project which are mainly `.c` files
+- `src` folder contains all the source code of the project which are mainly `.c` files. Each `.c` file implements a functionality/command e.g. `bg` command 
 - `include` folder contains all the header files associated with the format `.h`.
-- `/include/libs.h` is the main header file which imports all the other custom and system header files.
 
 <pre>
 .
 ├── shell
 ├── include
 │   ├── activities.h
-│   ├── buffer_sizes.h
+│   ├── bg_process.h
 │   ├── color.h
-│   ├── error_handling.h
-│   ├── execute.h
-│   ├── fg_bg.h
-│   ├── genesis-stdlib.h
+│   ├── helper_functions.h
 │   ├── iman.h
-│   ├── jobs.h
-│   ├── libs.h
+│   ├── input_handling.h
+│   ├── input_redirection.h
 │   ├── neonate.h
 │   ├── pastevents.h
+│   ├── path_handling.h
 │   ├── peek.h
 │   ├── ping.h
 │   ├── proclore.h

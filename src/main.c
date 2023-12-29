@@ -5,14 +5,7 @@
 #include <sys/utsname.h>
 #include <termios.h>
 #include <fcntl.h>
-
-#include "../include/path_handling.h"
-#include "../include/input_handling.h"
-#include "../include/helper_functions.h"
-#include "../include/history.h"
-#include "../include/raw_mode.h"
-#include "../include/bg_process.h"
-#include "../include/color.h"
+#include "../include/libs.h"
 
 
 // Defining some length variables(Maximum charater lengths)
