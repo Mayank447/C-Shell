@@ -93,11 +93,12 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
    3. [Redirection along with Pipes](#23-redirection-along-with-pipes)
    4. [Activities](#24-activities)
    5. [Signals](#25-signals)
-   6. [fg and bg](#25-fg-and-bg)
-   7. [Neonate](#26-neonate)
+   6. [fg command](#26-fg-command)
+   7. [bg command](#27-bg-command)
+   8. [Neonate Command](#28-neonate-command)
 3. [Networking](#3-networking)
    1. [iMan](#31-iman)
-4. [Commands Implementation overview](#4-command-implementation-overview)
+4. [Commands Implementation overview](#4-commands-implementation-overview)
 
 ## 1. Basic System Calls
 
@@ -113,7 +114,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 ### 1.2 Input
 
 - The shell supports all the bash commands and some custom commands listed below. Multiple commands chaining is supported using `;` or `&`, with robust input handling for random spaces and tabs.
-- In case of an invalid command or error. `Invalid command: error` is printed.
+- In case of an invalid command. `Invalid command: <error>` is printed.
 - Raw mode is supported in addition to &#8593; and &#8595; arrow keys for command history navigation.
 
 ### 1.3 Warp Command
@@ -198,7 +199,7 @@ Virtual memory : 167142
 executable path : ~/a.out
 ```
 
-- The `proclore` command provides information about a process, including PID, status, process group, virtual memory, and executable path. Proclore does't work on Mac.
+- The `proclore` command provides information about a process, including PID, status, process group, virtual memory, and executable path. `Proclore does't work on Mac.`
 - Process states :
   * R/R+ : Running
   * S/S+ : Sleeping in an interruptible wait
@@ -271,7 +272,7 @@ dolor sit amet
 
 - The shell supports I/O redirection with `>` , `>>` and `<`.
   * `>` : Outputs to the filename following ">"
-  * `>>` : Similar to `>` but appends instead of overwriting if the file already exists.
+  * `>>` : Similar to ">" but appends instead of overwriting if the file already exists.
   * `<` : Reads input from the filename following "<"
 
 
@@ -283,7 +284,7 @@ dolor sit amet
 1212
 ```
 - Pipes are supported for passing information between commands. The shell handles multiple pipes and executes commands sequentially.
-
+- Note there must be commands to the left and right of the pipe symbol. Otherwise an error "Invalid use of pipe" will be printed.
 
 ### 2.3 Redirection along with Pipes
 ```
@@ -293,45 +294,124 @@ Lorem Ipsum
 <mayankgoel@MayankGoel-2.local:~> cat b.txt
 1212
 ```
-- The shell seamlessly integrates I/O redirection with pipes.
+The shell seamlessly integrates I/O redirection with pipes.
 
 
 ### 2.4 Activities
+Syntax: `activities`
+```
+<mayankgoel@MayankGoel-2.local:~> activities
+221 : emacs new.txt - Running
+430 : vim - Stopped
+620 : gedit - Stopped
+```
+- The `activities` command displays a list of running or stopped background processes spawned by the shell whcih includes the command name, PID, and the process state.
 
-The `activities` command displays a list of running or stopped processes spawned by the shell, including command name, PID, and state.
 
 ### 2.5 Signals
+Syntax: `ping <pid> <signal>`
+```
+<mayankgoel@MayankGoel-2.local:~> activities
+221 : emacs new.txt - Running
+430 : vim - Stopped
+620 : gedit - Stopped
+<mayankgoel@MayankGoel-2.local:~> ping 221 9   # 9 is for SIGKILL
+Sent signal 9 to process with pid 221
+<mayankgoel@MayankGoel-2.local:~> activities
+430 : vim - Stopped
+620 : gedit - Stopped
+```
+- The `ping` command sends signals to specified processes given the PID. If the PID is not found, the error “No such process found” is printed.
 
-The `ping` command sends signals to processes, allowing termination or modification of their behavior. Keyboard shortcuts like `Ctrl-C`, `Ctrl-D` and `Ctrl-Z` are supported.
+- Keyboard shortcuts like `Ctrl-C`, `Ctrl-D` and `Ctrl-Z` are also supported.
+  * `Ctrl - C`: Interrupt any currently running foreground process by sending it the SIGINT signal. It has no effect if no foreground process is currently running.
+  * `Ctrl - D`: Logs out of the shell (after killing all processes) while having no effect on the actual terminal.
+  * `Ctrl - Z`: Pushes the running foreground process (if any) to the background and change it’s state from “Running” to “Stopped”. It has no effect on the shell if no foreground process is running.
 
-### 2.6 fg and bg
 
-The `fg` command brings a background process to the foreground, while `bg` changes the state of a stopped background process to running.
+### 2.6 fg command
+Syntax: `fg <pid>`
+```
+<mayankgoel@MayankGoel-2.local:~> activities
+620 : gedit - Stopped
+<mayankgoel@MayankGoel-2.local:~> fg 620
+# brings gedit [620] to foreground and change it's state to Running
+```
+- The `fg` command brings a background process (running or stopped) to the foreground.
+- If no process with the given pid exists, the error “No such process found” is printed.
 
-### 2.7 Neonate
 
-The `neonate` command prints the PID of the most recently created process at intervals until the user presses `x`.
+### 2.7 bg command
+Syntax: `bg <pid>`
+```
+<mayankgoel@MayankGoel-2.local:~> activities
+729 : htop - Stopped
+<mayankgoel@MayankGoel-2.local:~> bg 729
+# Changes [729] htop's state to Running (in the background).
+```
+- `bg` command changes the state of a background process to running (in the background). 
+- If no process with the given pid exists, the error “No such process found” is printed.
+
+
+### 2.8 Neonate Command
+Syntax: `neonate -n <time_arg>`
+```
+<mayankgoel@MayankGoel-2.local:~> neonate -n 4
+# A line containing the pid should be printed
+# every 4 seconds until the user 
+# presses the key: 'x'. 
+11810
+11811
+11811
+11812
+11813 # key 'x' is pressed at this moment terminating the printing
+```
+- The `neonate` command prints the PID of the most recently created process at intervals until the user presses `x`.
+- The command is intended mostly for debugging the shell.
+
 
 ## 3. Networking
-
 ### 3.1 iMan
+Syntax:  `iMan <command_name>`
+```
+<mayankgoel@MayankGoel-2.local:~> iMan sleep
+NAME
+       sleep - delay for a specified amount of time
 
-The `iMan` command fetches man pages from http://man.he.net/ using sockets. It displays information about the specified command or outputs an error if the page does not exist.
+SYNOPSIS
+       sleep NUMBER[SUFFIX]...
+       sleep OPTION
+
+DESCRIPTION
+       Pause for NUMBER seconds.  SUFFIX may be 's' for seconds (the default),
+       'm' for minutes, 'h' for hours or 'd' for days.  Unlike most  implemen-
+       tations  that require NUMBER be an integer, here NUMBER may be an arbi-
+       trary floating point number.  Given two or more  arguments,  pause  for
+       the amount of time specified by the sum of their values.
+
+       --help display this help and exit
+
+       --version
+              output version information and exit
+```
+- The `iMan` command fetches man pages from [http://man.he.net/](http://man.he.net/) using sockets. It displays information about the specified command or outputs an error if the page does not exist.
+- If the page does not exist, an error is printed.
+
 
 ## 4. Commands Implementation overview:
 
-| Commands             | Forked or not | Input Redirection | Output Redirection              | Piping status         |
-| -------------------- | ------------- | ----------------- | ------------------------------- | --------------------- |
-| `activities`       | yes           | no                | yes                             | cannot read from pipe |
-| `proclore`         | yes           | no                | yes                             | cannot read from pipe |
-| `bg`               | no            | no                | no                              | not piped             |
-| `fg`               | no            | no                | no                              | not piped             |
-| `iMan`             | yes           | no                | yes                             | cannot read from pipe |
-| `neonate`          | yes           | no                | yes                             | cannot read from pipe |
-| `ping`             | yes           | no                | yes                             | cannot read from pipe |
-| `warp`             | no            | no                | yes                             | cannot read from pipe |
-| `peek`             | yes           | no                | yes                             | cannot read from pipe |
-| `seek`             | no            | no                | yes                             | cannot read from pipe |
-| `pastevents`       | yes           | no                | yes                             | cannot read from pipe |
-| `pastevents purge` | yes           | no                | yes (but no output to redirect) | cannot read from pipe |
-| builtins             | yes           | yes               | yes                             | piped                 |
+| Commands             | Forked or not | Input Redirection | Output Redirection              |
+| -------------------- | ------------- | ----------------- | ------------------------------- |
+| `activities`       | yes           | no                | yes                             | 
+| `proclore`         | yes           | no                | yes                             | 
+| `bg`               | no            | no                | no                              |
+| `fg`               | no            | no                | no                              |
+| `iMan`             | yes           | no                | yes                             | 
+| `neonate`          | yes           | no                | yes                             | 
+| `ping`             | yes           | no                | yes                             | 
+| `warp`             | no            | no                | yes                             | 
+| `peek`             | yes           | no                | yes                             | 
+| `seek`             | no            | no                | yes                             | 
+| `pastevents`       | yes           | no                | yes                             | 
+| `pastevents purge` | yes           | no                | yes (but no self-output to redirect) | 
+| `builtins`             | yes           | yes               | yes                             |
