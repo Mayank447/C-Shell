@@ -10,7 +10,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 ### Directory structure
 
-- `src` folder contains all the source code of the project which are mainly `.c` files. Each `.c` file implements a functionality/command e.g. `bg` command
+- `src` folder contains all the source code of the project which are mainly `.c` files. Each `.c` file implements a functionality/command e.g. `proclore` command
 - `include` folder contains all the header files associated with the format `.h`.
 - `include/libs.h` is the main header file which imports all the other custom header files.
 
@@ -78,26 +78,26 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 ## Table of Contents
 
-1. [Basic System Calls](#basic-system-calls)
-   1. [Display](#display)
-   2. [Input](#input-requirements)
-   3. [Warp Command](#warp)
-   4. [Peek Command](#peek)
-   5. [Pastevents Commands](#pastevents-commands)
-   6. [Processes](#system-commands)
-   7. [Proclore Command](#proclore)
-   8. [Seek Command](#seek)
-2. [Processes, Files, and Misc.](#processes-files-and-misc)
-   1. [I/O Redirection](#io-redirection)
-   2. [Pipes](#pipes)
-   3. [Redirection along with Pipes](#redirection-along-with-pipes)
-   4. [Activities](#activities)
-   5. [Signals](#signals)
-   6. [fg and bg](#fg-and-bg)
-   7. [Neonate](#neonate)
-3. [Networking](#networking)
-   1. [iMan](#iman)
-4. [Commands Implementation overview](#)
+1. [Basic System Calls](#1-basic-system-calls)
+   1. [Display](#11-display)
+   2. [Input](#12-input)
+   3. [Warp Command](#13-warp-command)
+   4. [Peek Command](#14-peek-command)
+   5. [Pastevents Commands](#15-pastevents-commands)
+   6. [Processes](#16-processes)
+   7. [Proclore Command](#17-proclore-command)
+   8. [Seek Command](#18-seek-command)
+2. [Processes, Files, and Misc.](#2-processes-files-and-misc)
+   1. [I/O Redirection](#21-io-redirection)
+   2. [Pipes](#22-pipes)
+   3. [Redirection along with Pipes](#23-redirection-along-with-pipes)
+   4. [Activities](#24-activities)
+   5. [Signals](#25-signals)
+   6. [fg and bg](#25-fg-and-bg)
+   7. [Neonate](#26-neonate)
+3. [Networking](#3-networking)
+   1. [iMan](#31-iman)
+4. [Commands Implementation overview](#4-command-implementation-overview)
 
 ## 1. Basic System Calls
 
@@ -174,12 +174,12 @@ Hi
 sleep exited normally (11821)
 ```
 
-##### Foreground Process:
+#### Foreground Process:
 
 - The shell can execute system commands in both foreground and background.
 - Foreground processes which take > 2 seconds to run are printed in the next prompt (rounded down to integer).
 
-##### Background Process.
+#### Background Process.
 
 - Any command invoked with “&” is treated as a background command. This implies that your shell will spawn that process but doesn’t hand the control of terminal to it. Hence, shell will keep taking other user commands.
 - Whenever a new background process is started, the PID (Process ID) of the newly created background process is printed and same goes background process ends with the exit status.
@@ -209,7 +209,7 @@ executable path : ~/a.out
 
 Syntax:  `seek -flags <search> <target_directory>`
 
-##### Basic Usage:
+#### Basic Usage:
 
 ```
 
@@ -226,7 +226,7 @@ Syntax:  `seek -flags <search> <target_directory>`
 - It returns a list of relative paths (from target directory) of all matching files/directories (files in green and directories in blue).
 - In case of no matching files/directories "No match found!" is printed.
 
-##### Flags:
+#### Flags:
 
 ```
 <mayankgoel@MayankGoel-2.local:~> seek -d newfolder ./doe
