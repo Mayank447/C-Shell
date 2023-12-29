@@ -6,10 +6,10 @@
 #include <signal.h>
 #include <errno.h>
 
-#include "shell.h"
-#include "color.h"
-#include "helper_functions.h"
-#include "raw_mode.h"
+#include "../include/shell.h"
+#include "../include/color.h"
+#include "../include/helper_functions.h"
+#include "../include/raw_mode.h"
 
 #define BUFFER_LENGTH 1024
 

@@ -1,9 +1,12 @@
 .vscode/
-a.out
-temp/
-temp.c
 .CShell_history
-*.o
-shell
+
+temp*
 *.txt
 abc
+
+object_files/
+*.o
+
+shell
+a.out

@@ -3,9 +3,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "shell.h"
-#include "input_handling.h"
-#include "color.h"
+#include "../include/shell.h"
+#include "../include/input_handling.h"
+#include "../include/color.h"
 
 // Fn. to read history from file to history buffer
 void ReadHistoryFromFile()

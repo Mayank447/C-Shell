@@ -7,8 +7,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include "shell.h"
-#include "color.h"
+#include "../include/shell.h"
+#include "../include/color.h"
 
 void handle_error(char* error){
     print_error(error);

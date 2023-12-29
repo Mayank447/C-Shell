@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "shell.h"
+#include "../include/shell.h"
 
 int compareByPID(const void *a, const void *b) {
     const struct Process *pid1 = (const struct Process *)a;

@@ -5,11 +5,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "shell.h"
-#include "input_handling.h"
-#include "helper_functions.h"
-#include "color.h"
-#include "bg_process.h"
+#include "../include/shell.h"
+#include "../include/input_handling.h"
+#include "../include/helper_functions.h"
+#include "../include/color.h"
+#include "../include/bg_process.h"
 
 void pipeInputString(char* input){
     int pipe_fds[2];

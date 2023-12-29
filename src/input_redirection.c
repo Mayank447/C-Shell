@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "shell.h"
-#include "color.h"
+#include "../include/shell.h"
+#include "../include/color.h"
 
 void extractFilename(char* input, char file_name[], int i){
     int j=1;

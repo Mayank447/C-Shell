@@ -9,8 +9,8 @@
 #include <termios.h>
 #include <errno.h>
 
-#include "shell.h"
-#include "color.h"
+#include "../include/shell.h"
+#include "../include/color.h"
 
 void store_process_background(){
     // Storing the process in the process buffer

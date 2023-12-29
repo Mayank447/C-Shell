@@ -1,58 +1,68 @@
 # Write a make file for this directory
 
-a.out: main.o neonate.o iman.o raw_mode.o signal_handling.o piping.o history.o activities.o helper_functions.o proclore.o find.o color.o ls.o input_handling.o path_handling.o bg_process.o input_redirection.o
-	gcc -o a.out piping.o neonate.o activities.o signal_handling.o raw_mode.o iman.o proclore.o helper_functions.o input_redirection.o main.o bg_process.o color.o find.o history.o ls.o input_handling.o path_handling.o 
+BINARY_DIR=src
+OBJECT_DIR=object_files
 
-color.o: color.c
-	gcc -O -c -Wall color.c
+build: create_folder shell
 
-iman.o: iman.c
-	gcc -O -c -Wall iman.c
+create_folder:
+	mkdir -p $(OBJECT_DIR)
 
-raw_mode.o: raw_mode.c
-	gcc -O -c -Wall raw_mode.c
+shell: $(OBJECT_DIR)/main.o $(OBJECT_DIR)/neonate.o $(OBJECT_DIR)/iman.o $(OBJECT_DIR)/raw_mode.o $(OBJECT_DIR)/signal_handling.o $(OBJECT_DIR)/piping.o $(OBJECT_DIR)/history.o $(OBJECT_DIR)/activities.o $(OBJECT_DIR)/helper_functions.o $(OBJECT_DIR)/proclore.o $(OBJECT_DIR)/find.o $(OBJECT_DIR)/color.o $(OBJECT_DIR)/ls.o $(OBJECT_DIR)/input_handling.o $(OBJECT_DIR)/path_handling.o $(OBJECT_DIR)/bg_process.o $(OBJECT_DIR)/input_redirection.o
+	gcc -o shell $(OBJECT_DIR)/piping.o $(OBJECT_DIR)/neonate.o $(OBJECT_DIR)/activities.o $(OBJECT_DIR)/signal_handling.o $(OBJECT_DIR)/raw_mode.o $(OBJECT_DIR)/iman.o $(OBJECT_DIR)/proclore.o $(OBJECT_DIR)/helper_functions.o $(OBJECT_DIR)/input_redirection.o $(OBJECT_DIR)/main.o $(OBJECT_DIR)/bg_process.o $(OBJECT_DIR)/color.o $(OBJECT_DIR)/find.o $(OBJECT_DIR)/history.o $(OBJECT_DIR)/ls.o $(OBJECT_DIR)/input_handling.o $(OBJECT_DIR)/path_handling.o 
+	rm -rf $(OBJECT_DIR)
 
-neonate.o: neonate.c
-	gcc -O -c -Wall neonate.c
+$(OBJECT_DIR)/color.o: $(BINARY_DIR)/color.c
+	gcc -O -c -Wall $(BINARY_DIR)/color.c -o $(OBJECT_DIR)/color.o
 
-find.o: find.c
-	gcc -O -c -Wall find.c
+$(OBJECT_DIR)/iman.o: $(BINARY_DIR)/iman.c
+	gcc -O -c -Wall $(BINARY_DIR)/iman.c  -o $(OBJECT_DIR)/iman.o
 
-history.o: history.c
-	gcc -O -c -Wall history.c
+$(OBJECT_DIR)/raw_mode.o: $(BINARY_DIR)/raw_mode.c
+	gcc -O -c -Wall $(BINARY_DIR)/raw_mode.c  -o $(OBJECT_DIR)/raw_mode.o
 
-ls.o: ls.c
-	gcc -O -c -Wall ls.c
+$(OBJECT_DIR)/neonate.o: $(BINARY_DIR)/neonate.c
+	gcc -O -c -Wall $(BINARY_DIR)/neonate.c  -o $(OBJECT_DIR)/neonate.o
 
-input_handling.o: input_handling.c
-	gcc -O -c -Wall input_handling.c
+$(OBJECT_DIR)/find.o: $(BINARY_DIR)/find.c
+	gcc -O -c -Wall $(BINARY_DIR)/find.c  -o $(OBJECT_DIR)/find.o
 
-helper_functions.o: helper_functions.c
-	gcc -O -c -Wall helper_functions.c
+$(OBJECT_DIR)/history.o: $(BINARY_DIR)/history.c
+	gcc -O -c -Wall $(BINARY_DIR)/history.c  -o $(OBJECT_DIR)/history.o
 
-path_handling.o: path_handling.c
-	gcc -O -c -Wall path_handling.c
+$(OBJECT_DIR)/ls.o: $(BINARY_DIR)/ls.c
+	gcc -O -c -Wall $(BINARY_DIR)/ls.c  -o $(OBJECT_DIR)/ls.o
 
-proclore.o: proclore.c
-	gcc -O -c -Wall proclore.c
+$(OBJECT_DIR)/input_handling.o: $(BINARY_DIR)/input_handling.c
+	gcc -O -c -Wall $(BINARY_DIR)/input_handling.c  -o $(OBJECT_DIR)/input_handling.o
 
-activities.o: activities.c
-	gcc -O -c -Wall activities.c
+$(OBJECT_DIR)/helper_functions.o: $(BINARY_DIR)/helper_functions.c
+	gcc -O -c -Wall $(BINARY_DIR)/helper_functions.c  -o $(OBJECT_DIR)/helper_functions.o
 
-bg_process.o: bg_process.c
-	gcc -O -c -Wall bg_process.c
+$(OBJECT_DIR)/path_handling.o: $(BINARY_DIR)/path_handling.c
+	gcc -O -c -Wall $(BINARY_DIR)/path_handling.c  -o $(OBJECT_DIR)/path_handling.o
 
-signal_handling.o: signal_handling.c
-	gcc -O -c -Wall signal_handling.c
+$(OBJECT_DIR)/proclore.o: $(BINARY_DIR)/proclore.c
+	gcc -O -c -Wall $(BINARY_DIR)/proclore.c  -o $(OBJECT_DIR)/proclore.o
 
-input_redirection.o: input_redirection.c
-	gcc -O -c -Wall input_redirection.c
+$(OBJECT_DIR)/activities.o: $(BINARY_DIR)/activities.c
+	gcc -O -c -Wall $(BINARY_DIR)/activities.c  -o $(OBJECT_DIR)/activities.o
 
-piping.o: piping.c
-	gcc -O -c -Wall piping.c
+$(OBJECT_DIR)/bg_process.o: $(BINARY_DIR)/bg_process.c
+	gcc -O -c -Wall $(BINARY_DIR)/bg_process.c  -o $(OBJECT_DIR)/bg_process.o
 
-main.o: main.c
-	gcc -O -c -Wall main.c
+$(OBJECT_DIR)/signal_handling.o: $(BINARY_DIR)/signal_handling.c
+	gcc -O -c -Wall $(BINARY_DIR)/signal_handling.c  -o $(OBJECT_DIR)/signal_handling.o
+
+$(OBJECT_DIR)/input_redirection.o: $(BINARY_DIR)/input_redirection.c
+	gcc -O -c -Wall $(BINARY_DIR)/input_redirection.c  -o $(OBJECT_DIR)/input_redirection.o
+
+$(OBJECT_DIR)/piping.o: $(BINARY_DIR)/piping.c
+	gcc -O -c -Wall $(BINARY_DIR)/piping.c  -o $(OBJECT_DIR)/piping.o
+
+$(OBJECT_DIR)/main.o: $(BINARY_DIR)/main.c
+	gcc -O -c -Wall $(BINARY_DIR)/main.c -o $(OBJECT_DIR)/main.o
 
 clean:
-	rm -f *.o shell
+	rm -rf *.o shell a.out
+	rm -rf $(OBJECT_DIR)

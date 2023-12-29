@@ -5,8 +5,8 @@
 #include <signal.h>
 #include <errno.h>
 
-#include "shell.h"
-#include "color.h"
+#include "../include/shell.h"
+#include "../include/color.h"
 
 void signal_handler(char command_string[][MAX_ARGUMENT_LENGTH], int arguments)
 {

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "shell.h"
-#include "color.h"
+#include "../include/shell.h"
+#include "../include/color.h"
 
 //TO DO: Put relative path in the while loop
 

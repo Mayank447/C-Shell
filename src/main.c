@@ -6,13 +6,13 @@
 #include <termios.h>
 #include <fcntl.h>
 
-#include "path_handling.h"
-#include "input_handling.h"
-#include "helper_functions.h"
-#include "history.h"
-#include "raw_mode.h"
-#include "bg_process.h"
-#include "color.h"
+#include "../include/path_handling.h"
+#include "../include/input_handling.h"
+#include "../include/helper_functions.h"
+#include "../include/history.h"
+#include "../include/raw_mode.h"
+#include "../include/bg_process.h"
+#include "../include/color.h"
 
 
 // Defining some length variables(Maximum charater lengths)

@@ -5,10 +5,10 @@
 #include <unistd.h>
 
 #include "errno.h"
-#include "shell.h"
-#include "path_handling.h"
-#include "color.h"
-#include "path_handling.h"
+#include "../include/shell.h"
+#include "../include/path_handling.h"
+#include "../include/color.h"
+#include "../include/path_handling.h"
 
 int COUNT;
 char* PREVIOUS_FOUND;

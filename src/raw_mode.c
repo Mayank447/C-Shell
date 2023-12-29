@@ -5,8 +5,8 @@
 #include <ctype.h>
 #include <termios.h>
 #include <signal.h>
-#include "shell.h"
-#include "history.h"
+#include "../include/shell.h"
+#include "../include/history.h"
 
 // Function to print out the error message and exit with value 1
 void die(const char *s){

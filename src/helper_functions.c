@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "shell.h"
+#include "../include/shell.h"
 
 /* Function to convert the input to lowercase */
 char* lowercase(char* input){

@@ -11,8 +11,8 @@
 #include <grp.h>
 #include <time.h>
 
-#include "shell.h"
-#include "color.h"
+#include "../include/shell.h"
+#include "../include/color.h"
 
 int compare_lexo(void* a, void* b){
     struct lexoFileDir *file1 = (struct lexoFileDir*)a;

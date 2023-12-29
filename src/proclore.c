@@ -6,9 +6,9 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#include "shell.h"
-#include "path_handling.h"
-#include "color.h"
+#include "../include/shell.h"
+#include "../include/path_handling.h"
+#include "../include/color.h"
 
 #define BUFFER_LENGTH 4096
 
