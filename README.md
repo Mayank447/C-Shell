@@ -87,7 +87,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
    6. [Processes](#16-processes)
    7. [Proclore Command](#17-proclore-command)
    8. [Seek Command](#18-seek-command)
-2. [Processes, Files, and Misc.](#2-processes-files-and-misc)
+2. [Piping, Redirection, and Misc.](#2-piping-redirection-and-misc)
    1. [I/O Redirection](#21-io-redirection)
    2. [Pipes](#22-pipes)
    3. [Redirection along with Pipes](#23-redirection-along-with-pipes)
@@ -181,7 +181,7 @@ sleep exited normally (11821)
 
 #### Background Process.
 
-- Any command invoked with “&” is treated as a background command. This implies that your shell will spawn that process but doesn’t hand the control of terminal to it. Hence, shell will keep taking other user commands.
+- Any command invoked with `&` is treated as a background command. This implies that your shell will spawn that process but doesn’t hand the control of terminal to it. Hence, shell will keep taking other user commands.
 - Whenever a new background process is started, the PID (Process ID) of the newly created background process is printed and same goes background process ends with the exit status.
 - Background processes are not supported for custom commands such as warp, peek, pastevents etc.
 
@@ -203,7 +203,7 @@ executable path : ~/a.out
   * R/R+ : Running
   * S/S+ : Sleeping in an interruptible wait
   * Z : Zombie
-- `+` signifies a foreground process
+- "+" signifies a foreground process
 
 ### 1.8 Seek Command
 
@@ -251,19 +251,50 @@ This is a new folder!    # Content of newfolder.txt
   * This flag can be concatenated with -d and -f flags.
 - Note that -d and -f flag can’t be used at the same time, if used “Invalid flags!” error message is printed.
 
-## 2. Processes, Files, and Misc.
+## 2. Piping, Redirection, and Misc.
 
 ### 2.1 I/O Redirection
 
-The shell supports I/O redirection with `>` , `>>` and `<`. It handles errors gracefully, creating or overwriting files based on the redirection type.
+```
+<mayankgoel@MayankGoel-2.local:~> echo "Hello world" > newfile.txt
+<mayankgoel@MayankGoel-2.local:~> cat newfile.txt
+Hello world
+<mayankgoel@MayankGoel-2.local:~> wc < a.txt
+1 2 12   
+<mayankgoel@MayankGoel-2.local:~> echo "Lorem ipsum" > newfile.txt
+<mayankgoel@MayankGoel-2.local:~> cat newfile.txt
+Lorem ipsum
+<mayankgoel@MayankGoel-2.local:~> echo "dolor sit amet" >> newfile.txt
+Lorem ipsum
+dolor sit amet
+```
+
+- The shell supports I/O redirection with `>` , `>>` and `<`.
+  * `>` : Outputs to the filename following ">"
+  * `>>` : Similar to `>` but appends instead of overwriting if the file already exists.
+  * `<` : Reads input from the filename following "<"
+
 
 ### 2.2 Pipes
+```
+<mayankgoel@MayankGoel-2.local:~>  echo "Lorem Ipsum" | wc
+1 2 12      # extra spaces can be present
+<mayankgoel@MayankGoel-2.local:~>  echo "Lorem Ipsum" | wc | sed 's/ //g'
+1212
+```
+- Pipes are supported for passing information between commands. The shell handles multiple pipes and executes commands sequentially.
 
-Pipes are supported for passing information between commands. The shell handles multiple pipes and executes commands sequentially.
 
 ### 2.3 Redirection along with Pipes
+```
+<mayankgoel@MayankGoel-2.local:~> cat a.txt
+Lorem Ipsum
+<mayankgoel@MayankGoel-2.local:~> cat < a.txt | wc | sed 's/ //g' | cat > b.txt
+<mayankgoel@MayankGoel-2.local:~> cat b.txt
+1212
+```
+- The shell seamlessly integrates I/O redirection with pipes.
 
-The shell seamlessly integrates I/O redirection with pipes.
 
 ### 2.4 Activities
 
