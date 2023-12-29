@@ -7,21 +7,6 @@
 #include <fcntl.h>
 #include "../include/libs.h"
 
-// Defining some length variables(Maximum charater lengths)
-int MAX_INPUT_LENGTH = 1000;
-int MAX_PATH_LENGTH = 1000;
-int MAX_HISTORY_SIZE = 15;
-int MAX_FILE_NAME_LENGTH = 256;
-int MAX_FILES = 1000;
-int MAX_FILE_PROP_LENGTH = 1000;
-
-int MAX_COMMANDS = 100;
-int MAX_COMMAND_LENGTH = 1000;
-int MAX_ARGUMENTS = 100;
-int MAX_ARGUMENT_LENGTH = 1000;
-
-int MAX_PROCESSES = 1000;
-
 
 // Global Variables - > System Info
 char* systemName;

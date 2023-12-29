@@ -12,7 +12,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 - `src` folder contains all the source code of the project which are mainly `.c` files. Each `.c` file implements a functionality/command e.g. `bg` command
 - `include` folder contains all the header files associated with the format `.h`.
-- `/include/libs.h` is the main header file which imports all the other custom header files.
+- `include/libs.h` is the main header file which imports all the other custom header files.
 
 <pre>
 .
@@ -85,7 +85,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 - If the shell has just started, `warp` - won't change any directory.
 
-- Reasonable assumptions have been made for the maximum length of commands, filenames, history etc. The lengths for the same can be found out in the `main.c` file.
+- Reasonable assumptions have been made for the maximum length of commands, filenames, history etc. The lengths for the same can be found out in the `include/params.h` file.
 
 
 ### Compatibility
