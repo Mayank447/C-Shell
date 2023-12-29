@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include "../include/libs.h"
 
-#define BUFFER_LENGTH 4096
+#define BUFFER_LENGTH 1024
 
 void print_proclore(pid_t pid, char* process_status, pid_t group_pid,
                     unsigned long int virtual_memory_size, char* relative_exec_path)

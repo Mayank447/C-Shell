@@ -9,6 +9,7 @@
 #include "input_handling.h"
 #include "input_redirection.h"
 #include "neonate.h"
+#include "params.h"
 #include "pastevents.h"
 #include "path_handling.h"
 #include "peek.h"
@@ -17,7 +18,7 @@
 #include "raw_mode.h"
 #include "seek.h"
 #include "shell.h"
-#include "signal_handling.h"
+#include "signal.h"
 
 
 #endif

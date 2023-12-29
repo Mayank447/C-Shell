@@ -10,7 +10,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 ### Navigating the directory structure
 
-- `src` folder contains all the source code of the project which are mainly `.c` files. Each `.c` file implements a functionality/command e.g. `bg` command 
+- `src` folder contains all the source code of the project which are mainly `.c` files. Each `.c` file implements a functionality/command e.g. `bg` command
 - `include` folder contains all the header files associated with the format `.h`.
 
 <pre>
@@ -28,37 +28,44 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 │   ├── pastevents.h
 │   ├── path_handling.h
 │   ├── peek.h
-│   ├── ping.h
+│   ├── piping.h
 │   ├── proclore.h
 │   ├── raw_mode.h
-│   ├── read_parse.h
 │   ├── seek.h
 │   ├── shell.h
 │   ├── signal.h
-│   └── warp.h
 ├── makefile
 ├── README.md
 └── src
     ├── activities.c
-    ├── error_handling.c
-    ├── execute.c
-    ├── fg_bg.c
-    ├── genesis-stdlib.c
+    ├── bg_processes.c
+    ├── color.c
+    ├── helper_functions.c
     ├── iman.c
-    ├── jobs.c
+    ├── input_handling.c
+    ├── input_redirection.c
     ├── main.c
     ├── neonate.c
     ├── pastevents.c
+    ├── path_handling.c
     ├── peek.c
-    ├── ping.c
+    ├── piping.c
     ├── proclore.c
     ├── raw_mode.c
-    ├── read_parse.c
     ├── seek.c
-    ├── shell.c
     ├── signal.c
-    └── warp.c
 </pre>
+
+## List of assumptions-
+
+* Reasonable assumptions have been made for the maximum length of commands, filenames etc. The lengths for the same can be found out in the main.c file
+* Precedence order followed - \\"' ;  & | << < > other characters, strings. Any symbol after \ is ignore similar to bash.
+* Multiple random spaces and tab spaces have been handled.
+* The input string is converted into lowercase beforehand.
+* Up and down arrows can be used to scroll through the command history similar to bash.
+* The history is stored in .CShell_history file.
+* cd command won't execute. Instead use warp to change directories. If the shell has just started, warp - won't change any directory.
+* .. . ~ - can be used for referencing directories similar to bash.
 
 ### Usage
 
@@ -71,21 +78,21 @@ Commands can be chained with `;` or `&`. `;` runs the previous command in foregr
 
 ### Commands overview
 
-| Commands           | Forked or not | Input Redirection | Output Redirection              | Piping status         |
-| ------------------ | ------------- | ----------------- | ------------------------------- | --------------------- |
+| Commands             | Forked or not | Input Redirection | Output Redirection              | Piping status         |
+| -------------------- | ------------- | ----------------- | ------------------------------- | --------------------- |
 | `activities`       | yes           | no                | yes                             | cannot read from pipe |
 | `proclore`         | yes           | no                | yes                             | cannot read from pipe |
 | `bg`               | no            | no                | no                              | not piped             |
 | `fg`               | no            | no                | no                              | not piped             |
 | `iMan`             | yes           | no                | yes                             | cannot read from pipe |
-| `neonate`         | yes           | no                | yes                             | cannot read from pipe |
+| `neonate`          | yes           | no                | yes                             | cannot read from pipe |
 | `ping`             | yes           | no                | yes                             | cannot read from pipe |
 | `warp`             | no            | no                | yes                             | cannot read from pipe |
 | `peek`             | yes           | no                | yes                             | cannot read from pipe |
 | `seek`             | no            | no                | yes                             | cannot read from pipe |
 | `pastevents`       | yes           | no                | yes                             | cannot read from pipe |
 | `pastevents purge` | yes           | no                | yes (but no output to redirect) | cannot read from pipe |
-| builtins           | yes           | yes               | yes                             | piped                 |
+| builtins             | yes           | yes               | yes                             | piped                 |
 
 ### Pipe and Redirection
 
@@ -114,7 +121,7 @@ echo "hello there" | sed s/hello/hi/ | sed s/there/OSN/
 - commands stored in history are properly formatted with spaces. The raw string is not stored.
 - regardless of a commands' validity, it will be stored in history
 - history will never store the command line in history if there is even a single `pastevents` or `pastevents purge`, irrespective of the remaining command.
-Example:
+  Example:
 
 ```bash
 pastevents | pastevents execute 7 | wc > output.txt
@@ -173,33 +180,6 @@ what I am doing is reading until a max size and displaying whatever information 
 - ctrl-c works just fine while taking input. It moves to a newline
 
 ### Some Resources
-
-#### Raw mode and Terminal attributes
-
-- [Really good resource](https://viewsourcecode.org/snaptoken/kilo/02.enteringRawMode.html#:~:text=Raw%20mode%20is%20achieved%20by,the%20process%20to%20terminate%20immediately.)
-- KEEP IN MIND : when implementing ctrl-c or anything similar, make sure in your raw mode, you disable them using
-  `raw.c_lflag &= ~(ECHO | ICANON | ISIG);` and install signal handlers separately
-
-### GPT Usage
-
-- all the code which required sorting or formatted printing, then GPT was used
-- most of the code has been written by referring to either some books or man pages, specifically
-  - Books
-    - CSAPP
-    - Unix Programming
-  - Man pages
-    - GNU C Library
-
-## List of assumptions-
-
-* Reasonable assumptions have been made for the maximum length of commands, filenames etc. The lengths for the same can be found out in the main.c file
-* Precedence order followed - \\"' ;  & | << < > other characters, strings. Any symbol after \ is ignore similar to bash.
-* Multiple random spaces and tab spaces have been handled.
-* The input string is converted into lowercase beforehand.
-* Up and down arrows can be used to scroll through the command history similar to bash.
-* The history is stored in .CShell_history file.
-* cd command won't execute. Instead use warp to change directories. If the shell has just started, warp - won't change any directory.
-* .. . ~ - can be used for referencing directories similar to bash.
 
 ## Compiling
 

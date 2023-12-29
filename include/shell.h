@@ -14,24 +14,12 @@ extern char* relative_dir;
 extern char* previous_directory;
 extern char* process_time;
 
-extern int MAX_INPUT_LENGTH;
-extern int MAX_PATH_LENGTH;
-extern int MAX_HISTORY_SIZE;
-extern int MAX_FILE_NAME_LENGTH;
-extern int MAX_FILES;
-extern int MAX_FILE_PROP_LENGTH;
-
 extern char** history_buffer;
 extern int history_pointer;
 extern int history_size;
 extern int temp_history_pointer;
 extern char* history_string;
 extern char* shell_input;
-
-extern int MAX_COMMANDS;
-extern int MAX_COMMAND_LENGTH;
-extern int MAX_ARGUMENTS;
-extern int MAX_ARGUMENT_LENGTH;
 
 extern int saved_STDIN;
 extern int saved_STDOUT;

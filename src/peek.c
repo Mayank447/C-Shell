@@ -10,9 +10,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
-
-#include "../include/shell.h"
-#include "../include/color.h"
+#include "../include/libs.h"
 
 int compare_lexo(void* a, void* b){
     struct lexoFileDir *file1 = (struct lexoFileDir*)a;

@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include "../include/libs.h"
 
-
 // Defining some length variables(Maximum charater lengths)
 int MAX_INPUT_LENGTH = 1000;
 int MAX_PATH_LENGTH = 1000;
@@ -22,6 +21,7 @@ int MAX_ARGUMENTS = 100;
 int MAX_ARGUMENT_LENGTH = 1000;
 
 int MAX_PROCESSES = 1000;
+
 
 // Global Variables - > System Info
 char* systemName;
