@@ -126,6 +126,10 @@ void processInput(char input[])
         bg_command(command_string, n_arguments);
     }
 
+    else if(strcmp(command_string[0], "fg")==0){
+        bring_to_foreground(command_string, n_arguments);
+    }
+
     else if(strcmp(command_string[0], "seek")==0){
         find(command_string, n_arguments);
     }
