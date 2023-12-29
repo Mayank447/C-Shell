@@ -8,7 +8,7 @@
 
 Run `make` in the root directory to build. Run `./shell` to run the shell.
 
-### Navigating the directory structure
+### Directory structure
 
 - `src` folder contains all the source code of the project which are mainly `.c` files. Each `.c` file implements a functionality/command e.g. `bg` command
 - `include` folder contains all the header files associated with the format `.h`.
@@ -60,13 +60,13 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 ## Usage:
 
-- Precedence order followed `\ " ' ;  & | << < >` in decreasing order. Any symbol after \ is ignore similar to bash.
+- Precedence order followed is `\` , `"` , `'` , `;` , `&` , `|` , `<<` , `<` , `>` in the decreasing order. Any symbol after `\` is ignore similar to bash.
 
-- `;` and `&` can be used to chain commands. `;` runs the previous command in foreground. `&` runs the previous command in background.
+- `;` and `&` can be used to chain commands. `;` runs the previous command in foreground. `&` symbol runs the previous command in background.
 
 - Pipe symbol `|` can be used for piping commands similar to bash.
 
-- Input-output redirection can be performed using `>`, `>>` and `<` similar to Bash.
+- Input-output redirection can be performed using `>`, `>>` and `<` similar to bash.
 
 - `.. . ~ -` can be used for referencing directories similar to bash.
 
@@ -81,18 +81,95 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 
 - The history is stored in a hidden file `.CShell_history`.
 
-- `cd` command won't chnage directories because of forking. Instead use `warp` command to change directories.
+- `cd` command won't change directories due to running a command in a fork. Instead use `warp` command to change directories.
 
-- If the shell has just started, `warp` - won't change any directory.
+- If the shell has just started, `warp -` won't change any directory.
 
 - Reasonable assumptions have been made for the maximum length of commands, filenames, history etc. The lengths for the same can be found out in the `include/params.h` file.
 
 
-### Compatibility
+## Table of Contents
+1. [Basic System Calls](#basic-system-calls)
+    1. [Display](#display)
+    2. [Input Requirements](#input-requirements)
+    3. [Warp](#warp)
+    4. [Peek](#peek)
+    5. [Pastevents Commands](#pastevents-commands)
+    6. [System Commands](#system-commands)
+    7. [Proclore](#proclore)
+    8. [Seek](#seek)
+2. [Processes, Files, and Misc.](#processes-files-and-misc)
+    1. [I/O Redirection](#io-redirection)
+    2. [Pipes](#pipes)
+    3. [Redirection along with Pipes](#redirection-along-with-pipes)
+    4. [Activities](#activities)
+    5. [Signals](#signals)
+    6. [fg and bg](#fg-and-bg)
+    7. [Neonate](#neonate)
+3. [Networking](#networking)
+    1. [iMan](#iman)
+4. [Commands Implementation overview](#)
 
-- `sigabbrev_np` and `sigdescr_np` are used which may not be available on all systems
 
-### Commands overview
+## 1. Basic System Calls
+
+### 1.1 Display
+The shell displays a prompt with the format `<Username@SystemName:~>`, providing information about the current directory. The prompt dynamically updates when changing directories.
+
+### 1.2 Input Requirements
+The shell supports a list of commands separated by `;` or `&`, with robust input handling for random spaces and tabs. It can execute commands in both foreground and background.
+
+### 1.3 Warp
+The `warp` command changes the current working directory and supports various flags like `.` , `..` , `~` and `-`. It handles both absolute and relative paths.
+
+### 1.4 Peek
+The `peek` command lists files and directories with color coding based on flags like `-a`, and `-l`. It supports symbols like `.` , `..` , `~` and `-`.
+
+### 1.5 Pastevents Commands
+The `pastevents` command stores and retrieves the 15 (this limit can be changed in `include/params.h`) most recent command statements, excluding duplicates and specific commands. It supports execution of past events and purging.
+
+### 1.6 System Commands
+The shell can execute system commands in both foreground and background. It provides information about foreground processes' execution time and name. Background processes are managed, and their completion is reported.
+
+### 1.7 Proclore
+The `proclore` command provides information about a process, including PID, status, process group, virtual memory, and executable path. Proclore won't work on mac.
+
+### 1.8 Seek
+The `seek` command searches for files or directories in the specified target directory, supporting flags like `-d` , `-f`, and `-e`.
+
+
+## 2. Processes, Files, and Misc.
+
+### 2.1 I/O Redirection
+The shell supports I/O redirection with `>` , `>>` and `<`. It handles errors gracefully, creating or overwriting files based on the redirection type.
+
+### 2.2 Pipes
+Pipes are supported for passing information between commands. The shell handles multiple pipes and executes commands sequentially.
+
+### 2.3 Redirection along with Pipes
+The shell seamlessly integrates I/O redirection with pipes.
+
+### 2.4 Activities
+The `activities` command displays a list of running or stopped processes spawned by the shell, including command name, PID, and state.
+
+### 2.5 Signals
+The `ping` command sends signals to processes, allowing termination or modification of their behavior. Keyboard shortcuts like `Ctrl-C`, `Ctrl-D` and `Ctrl-Z` are supported.
+
+### 2.6 fg and bg
+The `fg` command brings a background process to the foreground, while `bg` changes the state of a stopped background process to running.
+
+### 2.7 Neonate
+The `neonate` command prints the PID of the most recently created process at intervals until the user presses `x`.
+
+
+## 3. Networking
+
+### 3.1 iMan
+The `iMan` command fetches man pages from http://man.he.net/ using sockets. It displays information about the specified command or outputs an error if the page does not exist.
+
+
+
+## 4. Commands Implementation overview:
 
 | Commands             | Forked or not | Input Redirection | Output Redirection              | Piping status         |
 | -------------------- | ------------- | ----------------- | ------------------------------- | --------------------- |
@@ -109,97 +186,3 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 | `pastevents`       | yes           | no                | yes                             | cannot read from pipe |
 | `pastevents purge` | yes           | no                | yes (but no output to redirect) | cannot read from pipe |
 | builtins             | yes           | yes               | yes                             | piped                 |
-
-### Pipe and Redirection
-
-- prioritizing piping over redirection [bash has a proper grammar and handles things differently]
-- `warp()`, `fg()` and `bg()` wont work with piping
-
-### Inbuilt functions
-
-- `sed` will work with piping given you don't include the replace logic in quotes (this probably happens because)
-
-```bash
-echo "Hello there" | sed 's/hello/hi/' | sed 's/there/OSN/'
-```
-
-The above command will not work and output an error message but the below command will give a valid output.
-
-```bash
-echo "hello there" | sed s/hello/hi/ | sed s/there/OSN/
-"hi OSN" # output 
-```
-
-### Custom functions
-
-#### **`pastevents`**
-
-- commands stored in history are properly formatted with spaces. The raw string is not stored.
-- regardless of a commands' validity, it will be stored in history
-- history will never store the command line in history if there is even a single `pastevents` or `pastevents purge`, irrespective of the remaining command.
-  Example:
-
-```bash
-pastevents | pastevents execute 7 | wc > output.txt
-```
-
-The above command won't be stored in history.
-
-```bash
-pastevents execute 7 | wc > output.txt
-```
-
-The above command will be stored in history after replacing `pastevents execute 7` with the 7th command stored in history
-
-#### **`proclore`**
-
-- Earlier, I was forking `proclore` to run it but it never showed the parent shell as $R+$ but as $S/S+$ since at the moment of execution, the shell is not in foreground but the child process is. This does not mean that the implementation is wrong. But due to my implementation of piping and all, I decided to keep this so I could do piping with `proclore`.
-
-#### **`warp`**
-
-- will work with output redirection
-
-#### **`iMan`**
-
-- in `iMan` , grep is very large so can't be malloc that much space. This is my output of `realloc()` again and again
-
-```bash
-iMan grep
-# output: cur_size is the realloc size() called
-cur_size = 2048
-cur_size = 4096
-cur_size = 6144
-cur_size = 8192
-cur_size = 10240
-cur_size = 12288
-cur_size = 14336
-cur_size = 16384
-cur_size = 18432
-realloc(): invalid next size
-```
-
-what I am doing is reading until a max size and displaying whatever information I fetched. This is to keep everything simple.
-
-### Some assumptions
-
-- `getenv()` and `setenv()` have been used to set `HOME` , `PWD` and `OLDPWD` environment variables. None others have been utilized.
-- to keep everything atomic, the changes are not made immediately but in the next iteration of while loop
-
-### Things to keep in mind while giving input
-
-- `;` and `&` can be chained in similar ways to bash
-
-### Below are a few bash specific things
-
-- ctrl-d does not work while sleep is in foreground
-- ctrl-d , ctrl-z are disabled while taking input
-- ctrl-c works just fine while taking input. It moves to a newline
-
-### Some Resources
-
-## Compiling
-
-```
-make
-./a.out
-```
