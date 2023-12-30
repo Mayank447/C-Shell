@@ -71,7 +71,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 ## Assumptions:
 
 - Multiple spaces and tab spaces are ignored.
-- Commands, files,l and folders names are case-insensitive.
+- Commands, file and folder names are case-insensitive.
 - The history is stored in a hidden file `.CShell_history`.
 - `cd` command won't change directories due to running a command in a fork. Instead use `warp` command to change directories.
 - If the shell has just started, `warp -` won't change any directory.
