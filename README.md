@@ -25,6 +25,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 │   ├── iman.h
 │   ├── input_handling.h
 │   ├── input_redirection.h
+│   ├── libs.h
 │   ├── neonate.h
 │   ├── params.h
 │   ├── pastevents.h
