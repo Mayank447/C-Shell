@@ -65,7 +65,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 - `;` and `&` can be used to chain commands. `;` runs the previous command in foreground. `&` symbol runs the previous command in background.
 - Pipe symbol `|` can be used for piping commands similar to bash.
 - Input-output redirection can be performed using `>`, `>>` and `<` similar to bash.
-- `.. . ~ -` can be used for referencing directories similar to bash.
+- `..`, `.`, `~`, and `-` can be used for referencing directories similar to bash.
 - &#8593; and &#8595; arrows can be used to scroll through the command history similar to bash.
 
 ## Assumptions:
@@ -396,7 +396,6 @@ DESCRIPTION
               output version information and exit
 ```
 - The `iMan` command fetches man pages from [http://man.he.net/](http://man.he.net/) using sockets. It displays information about the specified command or outputs an error if the page does not exist.
-- If the page does not exist, an error is printed.
 
 
 ## 4. Commands Implementation overview:
