@@ -65,7 +65,7 @@ Run `make` in the root directory to build. Run `./shell` to run the shell.
 - `;` and `&` can be used to chain commands. `;` runs the previous command in foreground. `&` symbol runs the previous command in background.
 - Pipe symbol `|` can be used for piping commands similar to bash.
 - Input-output redirection can be performed using `>`, `>>` and `<` similar to bash.
-- `..`, `.`, `~`, and `-` can be used for referencing directories similar to bash.
+- `..`, `.`, `~`, and `-` can be used for path referencing similar to bash.
 - &#8593; and &#8595; arrows can be used to scroll through the command history similar to bash.
 
 ## Assumptions:
